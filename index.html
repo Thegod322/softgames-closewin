@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Softgames — Operation Close Win (Tripeaks & Difficulty Tuner)</title>
+    <link rel="stylesheet" href="./src/ui/Layout.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="app-header">
+        <div class="logo-area">
+          <span class="badge">SOFTGAMES</span>
+          <h1>Operation Close Win</h1>
+        </div>
+        <nav class="module-tabs">
+          <button id="tab-game" class="tab-btn active">🎮 Playable Prototype</button>
+          <button id="tab-tuner" class="tab-btn">📊 Difficulty Tuner & Monte Carlo</button>
+        </nav>
+      </header>
+
+      <main class="app-main">
+        <!-- Module 1: Game Prototype View -->
+        <section id="game-view" class="module-view active">
+          <div class="game-toolbar">
+            <div class="level-select-group">
+              <label for="level-select">Select Level:</label>
+              <select id="level-select">
+                <option value="level_25">Level 25 (Baseline / Hard)</option>
+                <option value="level_31">Level 31 (Zap + Locks + Keys)</option>
+                <option value="level_43">Level 43 (Complex Multi-Layer)</option>
+                <option value="level_54">Level 54 (Bomb Modifiers)</option>
+              </select>
+            </div>
+            <div class="game-actions">
+              <button id="btn-restart" class="btn btn-secondary">↺ Restart</button>
+              <button id="btn-undo" class="btn btn-secondary">↶ Undo</button>
+            </div>
+          </div>
+          <div id="canvas-container"></div>
+        </section>
+
+        <!-- Module 2: Tuner & Simulation View -->
+        <section id="tuner-view" class="module-view">
+          <div id="tuner-dashboard"></div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="./src/main.ts"></script>
+  </body>
+</html>
