@@ -28,6 +28,7 @@ export class GameView {
   private isAnimating: boolean = false;
 
   private overlayElement!: HTMLElement;
+  private tooltipElement!: HTMLElement;
 
   public async init(container: HTMLElement): Promise<void> {
     this.container = container;
@@ -49,10 +50,17 @@ export class GameView {
     this.app.stage.addChild(this.fxContainer);
 
     this.createOverlay();
+    this.createTooltip();
 
     window.addEventListener('resize', () => {
       this.handleResize();
     });
+  }
+
+  private createTooltip(): void {
+    this.tooltipElement = document.createElement('div');
+    this.tooltipElement.className = 'card-tooltip';
+    this.container.appendChild(this.tooltipElement);
   }
 
   private createOverlay(): void {
@@ -84,11 +92,13 @@ export class GameView {
   }
 
   public restart(): void {
+    this.hideCardTooltip();
     if (!this.currentLevelJson) return;
     this.loadLevel(this.currentLevelJson, this.currentSeed, this.customDeckSize);
   }
 
   public undo(): void {
+    this.hideCardTooltip();
     if (this.isAnimating || !this.engine) return;
     if (this.engine.undo()) {
       this.hideOverlay();
@@ -141,6 +151,15 @@ export class GameView {
       cardWrap.cursor = 'pointer';
       cardWrap.on('pointerdown', () => {
         this.onCardClicked(card.id);
+      });
+      cardWrap.on('pointerenter', (e) => {
+        this.showCardTooltip(card.id, e.global.x, e.global.y);
+      });
+      cardWrap.on('pointermove', (e) => {
+        this.updateCardTooltipPosition(e.global.x, e.global.y);
+      });
+      cardWrap.on('pointerleave', () => {
+        this.hideCardTooltip();
       });
 
       this.tableContainer.addChild(cardWrap);
@@ -273,6 +292,7 @@ export class GameView {
   }
 
   private onCardClicked(cardId: string): void {
+    this.hideCardTooltip();
     if (this.isAnimating || this.engine.status !== 'playing') return;
 
     const card = this.engine.boardCards.get(cardId);
@@ -343,6 +363,7 @@ export class GameView {
   }
 
   private onDrawClicked(): void {
+    this.hideCardTooltip();
     if (this.isAnimating || this.engine.status !== 'playing') return;
     if (this.engine.drawPile.length === 0) return;
 
@@ -418,5 +439,95 @@ export class GameView {
 
   private hideOverlay(): void {
     this.overlayElement.className = 'game-overlay';
+  }
+
+  private showCardTooltip(cardId: string, globalX: number, globalY: number): void {
+    if (!this.currentLevelJson || !this.engine) return;
+    const card = this.engine.boardCards.get(cardId);
+    const raw = this.currentLevelJson.cards.find((c) => c.id === cardId);
+    if (!card || !raw) return;
+
+    const coveredBy = Array.from(this.engine.cardGraph.coveredByMap.get(cardId) || []);
+    const covers = Array.from(this.engine.cardGraph.coversMap.get(cardId) || []);
+    const bombMod = card.modifiers.find((m) => m.type === 'bomb');
+
+    this.tooltipElement.innerHTML = `
+      <div class="card-tooltip-header">
+        <span>📇 ${card.id}</span>
+        <span style="text-transform: uppercase; color: var(--accent-blue);">${raw.type}</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">JSON Pos (x, y):</span>
+        <span class="card-tooltip-val highlight">(${raw.x}, ${raw.y})</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Depth (Layer):</span>
+        <span class="card-tooltip-val highlight">${raw.depth}</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Angle:</span>
+        <span class="card-tooltip-val">${raw.angle}°</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Sequence:</span>
+        <span class="card-tooltip-val">${raw.sequence}</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Card Value:</span>
+        <span class="card-tooltip-val">${card.faceUp ? `${card.rank} (${card.suit})` : 'Hidden'}</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Face State:</span>
+        <span class="card-tooltip-val ${card.faceUp ? 'badge-yes' : 'badge-no'}">${card.faceUp ? 'Face Up' : 'Face Down'}</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Playable:</span>
+        <span class="card-tooltip-val ${card.isPlayable ? 'badge-yes' : 'badge-no'}">${card.isPlayable ? 'Yes' : 'No'}</span>
+      </div>
+      ${card.isLocked ? `
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Lock State:</span>
+        <span class="card-tooltip-val badge-no">🔒 Locked</span>
+      </div>` : ''}
+      ${bombMod ? `
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Bomb Timer:</span>
+        <span class="card-tooltip-val badge-no">💣 ${card.bombTimer ?? bombMod.properties.timer} moves</span>
+      </div>` : ''}
+      <div class="card-tooltip-row" style="margin-top: 4px; border-top: 1px dashed var(--border-subtle); padding-top: 4px;">
+        <span class="card-tooltip-key">Covered By:</span>
+        <span class="card-tooltip-val">${coveredBy.length > 0 ? coveredBy.join(', ') : 'None (Top)'}</span>
+      </div>
+      <div class="card-tooltip-row">
+        <span class="card-tooltip-key">Covers:</span>
+        <span class="card-tooltip-val">${covers.length > 0 ? covers.join(', ') : 'None'}</span>
+      </div>
+    `;
+
+    this.updateCardTooltipPosition(globalX, globalY);
+    this.tooltipElement.classList.add('active');
+  }
+
+  private updateCardTooltipPosition(globalX: number, globalY: number): void {
+    if (!this.tooltipElement) return;
+    const rect = this.container.getBoundingClientRect();
+    let left = globalX + 16;
+    let top = globalY + 16;
+
+    if (left + 270 > rect.width) {
+      left = globalX - 275;
+    }
+    if (top + 240 > rect.height) {
+      top = globalY - 245;
+    }
+
+    this.tooltipElement.style.left = `${Math.max(10, left)}px`;
+    this.tooltipElement.style.top = `${Math.max(10, top)}px`;
+  }
+
+  private hideCardTooltip(): void {
+    if (this.tooltipElement) {
+      this.tooltipElement.classList.remove('active');
+    }
   }
 }

@@ -435,3 +435,69 @@ body {
   font-size: 16px;
   color: var(--text-muted);
 }
+
+/* Card Inspector Tooltip */
+.card-tooltip {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--accent-blue);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text-main);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 12px rgba(56, 189, 248, 0.25);
+  min-width: 220px;
+  max-width: 280px;
+}
+
+.card-tooltip.active {
+  opacity: 1;
+}
+
+.card-tooltip-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--accent-gold);
+}
+
+.card-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 2px;
+}
+
+.card-tooltip-key {
+  color: var(--text-muted);
+}
+
+.card-tooltip-val {
+  color: #f1f5f9;
+  font-weight: 600;
+  text-align: right;
+}
+
+.card-tooltip-val.highlight {
+  color: var(--accent-blue);
+}
+
+.card-tooltip-val.badge-yes {
+  color: var(--accent-green);
+}
+
+.card-tooltip-val.badge-no {
+  color: var(--accent-red);
+}
