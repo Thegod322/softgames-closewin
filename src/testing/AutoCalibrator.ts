@@ -224,7 +224,7 @@ export class AutoCalibrator {
       };
     }
 
-  private async evaluateTargetCalibrationDataAsync(
+  public async evaluateTargetCalibrationDataAsync(
     levelJson: LevelJSON,
     targetName: string,
     deckSize: number,
@@ -246,7 +246,7 @@ export class AutoCalibrator {
       40000,
       botConfig,
       (scanned, found) => {
-        const p = startPct + range * (0.1 + (found / 150) * 0.35);
+        const p = startPct + range * (0.1 + (found / 150) * 0.4);
         onProgress?.(`${targetName}: Mined ${found}/150 seeds (@ ${deckSize} cards, scanned: ${scanned})...`, p);
       }
     );
@@ -262,7 +262,7 @@ export class AutoCalibrator {
     for (const pType of personaTypes) {
       const profile = PERSONA_PRESETS[pType];
       pIdx++;
-      const pProgressBase = startPct + range * (0.45 + (pIdx / 3) * 0.5);
+      const pProgressBase = startPct + range * (0.5 + (pIdx / 3) * 0.48);
 
       onProgress?.(`${targetName}: Simulating ${profile.name} on ${minedSeeds.length} Golden Seeds (@ ${deckSize} cards)...`, pProgressBase - range * 0.08);
       personaResultsGolden[pType] = await runSimulationAsync(
@@ -314,8 +314,8 @@ export class AutoCalibrator {
     const seedOffset = options?.seedOffset ?? 42;
     const onProgress = options?.onProgress;
 
-    // Stage 1: Target 1 - Strict Brief (70% CWR) Calibration on Stochastic PRNG
-    onProgress?.('Target 1: Calibrating 70% Close Win Deck Size (Stochastic PRNG)...', 5);
+    // Stage 1: Target 1 - Strict Brief (70% CWR) Calibration via Bisection Search
+    onProgress?.('Target: Calibrating 70% Close Win Deck Size (Stochastic PRNG)...', 10);
     const targetBriefResult = await this.calibrateAsync(
       levelJson,
       2000,
@@ -324,73 +324,21 @@ export class AutoCalibrator {
       seedOffset,
       options?.botConfig,
       (step) => {
-        onProgress?.(`Target 1: Testing Deck ${step.deckSize} cards (CWR: ${step.metrics.closeWinRate.toFixed(1)}%)...`, 12);
+        onProgress?.(`Target: Testing Deck ${step.deckSize} cards (CWR: ${step.metrics.closeWinRate.toFixed(1)}%)...`, 25);
       },
       undefined
     );
 
-    // Target 1: Dynamic Mining & Persona Stress Test
+    // Stage 2: Target 1 Dynamic Mining & 3-Persona Benchmark
     const targetBrief = await this.evaluateTargetCalibrationDataAsync(
       levelJson,
-      'Target 1 (Strict Brief)',
+      'Target (70% CWR)',
       targetBriefResult.optimalDeckSize,
       targetBriefResult.bestMetrics,
       seedOffset,
       options?.botConfig,
       onProgress,
-      15,
-      40
-    );
-
-    // Stage 2: Target 2 - Retention Peak (Max Drama) on Stochastic PRNG
-    onProgress?.('Target 2: Finding Retention Peak & Near Miss Balance...', 42);
-    const targetPeakResult = await this.calibrateAbsolutePeakAsync(
-      levelJson,
-      2000,
-      seedOffset,
-      options?.botConfig,
-      (step) => {
-        onProgress?.(`Target 2: Testing Deck ${step.deckSize} cards (Drama: ${step.metrics.dramaticRate.toFixed(1)}%)...`, 48);
-      },
-      undefined
-    );
-
-    // Target 2: Dynamic Mining & Persona Stress Test
-    const targetPeak = await this.evaluateTargetCalibrationDataAsync(
-      levelJson,
-      'Target 2 (Retention Peak)',
-      targetPeakResult.optimalDeckSize,
-      targetPeakResult.bestMetrics,
-      seedOffset,
-      options?.botConfig,
-      onProgress,
-      50,
-      72
-    );
-
-    // Stage 3: Target 3 - Raw Level Baseline on Stochastic PRNG
-    onProgress?.('Target 3: Simulating Raw Level Baseline...', 74);
-    const baselineDeckSize = levelJson.settings.cards_in_stack.length;
-    const baselineMetrics = await runSimulationAsync(
-      levelJson,
-      2000,
-      baselineDeckSize,
-      seedOffset,
-      options?.botConfig,
-      undefined,
-      undefined
-    );
-
-    // Target 3: Dynamic Mining & Persona Stress Test
-    const baseline = await this.evaluateTargetCalibrationDataAsync(
-      levelJson,
-      'Target 3 (Raw Baseline)',
-      baselineDeckSize,
-      baselineMetrics,
-      seedOffset,
-      options?.botConfig,
-      onProgress,
-      76,
+      30,
       98
     );
 
@@ -398,9 +346,7 @@ export class AutoCalibrator {
 
     return {
       levelId: levelJson.id,
-      baseline,
       targetBrief,
-      targetPeak,
     };
   }
 }

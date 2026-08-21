@@ -28,10 +28,10 @@ async function runTest() {
   const elapsed = ((performance.now() - startTime) / 1000).toFixed(2);
   console.log(`\nAnalysis completed in ${elapsed}s!\n`);
 
-  console.log('--- 1. SYMMETRIC CALIBRATION TARGETS (N = 2,000 runs each) ---');
+  console.log('--- 1. CALIBRATED TARGET BENCHMARK (N = 2,000 runs) ---');
   console.table([
     {
-      'Target': '🎯 Target 1: Strict Brief (70% CWR)',
+      'Target': '🎯 Target: Strict Brief (70% CWR)',
       'Deck': report.targetBrief.deckSize,
       'Pass Rate': `${report.targetBrief.metrics.passRate.toFixed(1)}% (${report.targetBrief.metrics.wins}/2k | ${Math.round(report.targetBrief.metrics.passRate*10)}/1k)`,
       'CWR': `${report.targetBrief.metrics.closeWinRate.toFixed(1)}% (${report.targetBrief.metrics.closeWins}/${report.targetBrief.metrics.wins})`,
@@ -40,28 +40,6 @@ async function runTest() {
       'Drama Cohort': `${(report.targetBrief.metrics.dramaticRate * 10).toFixed(0)} / 1k`,
       'Deck/Bomb Loss': `${report.targetBrief.metrics.deckLossRate.toFixed(1)}% / ${report.targetBrief.metrics.bombLossRate.toFixed(1)}%`,
       'Median/Streak': `${report.targetBrief.metrics.medianRemainder} rem / ${report.targetBrief.metrics.avgStreak.toFixed(1)} str`,
-    },
-    {
-      'Target': '⚡ Target 2: Retention Peak',
-      'Deck': report.targetPeak.deckSize,
-      'Pass Rate': `${report.targetPeak.metrics.passRate.toFixed(1)}% (${report.targetPeak.metrics.wins}/2k | ${Math.round(report.targetPeak.metrics.passRate*10)}/1k)`,
-      'CWR': `${report.targetPeak.metrics.closeWinRate.toFixed(1)}% (${report.targetPeak.metrics.closeWins}/${report.targetPeak.metrics.wins})`,
-      'Abs Close Wins': `${report.targetPeak.metrics.absCloseWinRate.toFixed(1)}% (${Math.round(report.targetPeak.metrics.absCloseWinRate*10)}/1k)`,
-      'Near Misses': `${report.targetPeak.metrics.nearMissRate.toFixed(1)}% (${Math.round(report.targetPeak.metrics.nearMissRate*10)}/1k)`,
-      'Drama Cohort': `${(report.targetPeak.metrics.dramaticRate * 10).toFixed(0)} / 1k`,
-      'Deck/Bomb Loss': `${report.targetPeak.metrics.deckLossRate.toFixed(1)}% / ${report.targetPeak.metrics.bombLossRate.toFixed(1)}%`,
-      'Median/Streak': `${report.targetPeak.metrics.medianRemainder} rem / ${report.targetPeak.metrics.avgStreak.toFixed(1)} str`,
-    },
-    {
-      'Target': '📦 Target 3: Raw Baseline',
-      'Deck': report.baseline.deckSize,
-      'Pass Rate': `${report.baseline.metrics.passRate.toFixed(1)}% (${report.baseline.metrics.wins}/2k | ${Math.round(report.baseline.metrics.passRate*10)}/1k)`,
-      'CWR': `${report.baseline.metrics.closeWinRate.toFixed(1)}% (${report.baseline.metrics.closeWins}/${report.baseline.metrics.wins})`,
-      'Abs Close Wins': `${report.baseline.metrics.absCloseWinRate.toFixed(1)}% (${Math.round(report.baseline.metrics.absCloseWinRate*10)}/1k)`,
-      'Near Misses': `${report.baseline.metrics.nearMissRate.toFixed(1)}% (${Math.round(report.baseline.metrics.nearMissRate*10)}/1k)`,
-      'Drama Cohort': `${(report.baseline.metrics.dramaticRate * 10).toFixed(0)} / 1k`,
-      'Deck/Bomb Loss': `${report.baseline.metrics.deckLossRate.toFixed(1)}% / ${report.baseline.metrics.bombLossRate.toFixed(1)}%`,
-      'Median/Streak': `${report.baseline.metrics.medianRemainder} rem / ${report.baseline.metrics.avgStreak.toFixed(1)} str`,
     },
   ]);
 

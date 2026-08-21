@@ -1,0 +1,285 @@
+{
+    "id": "level_test_01",
+    "version": "4.0.0",
+    "cards": [
+        {
+            "id": "card_1",
+            "type": "value",
+            "x": -380,
+            "y": 440,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 0,
+            "modifiers": []
+        },
+        {
+            "id": "card_2",
+            "type": "value",
+            "x": -260,
+            "y": 440,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 1,
+            "modifiers": []
+        },
+        {
+            "id": "card_3",
+            "type": "key",
+            "x": -320,
+            "y": 320,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "sequence": 2,
+            "modifiers": []
+        },
+        {
+            "id": "card_4",
+            "type": "value",
+            "x": -350,
+            "y": 380,
+            "depth": 1,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 3,
+            "modifiers": []
+        },
+        {
+            "id": "card_5",
+            "type": "value",
+            "x": -290,
+            "y": 380,
+            "depth": 1,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 4,
+            "modifiers": []
+        },
+        {
+            "id": "card_6",
+            "type": "value",
+            "x": -320,
+            "y": 240,
+            "depth": 2,
+            "angle": 0,
+            "faceUp": true,
+            "random": true,
+            "sequence": 5,
+            "modifiers": []
+        },
+        {
+            "id": "card_7",
+            "type": "value",
+            "x": 260,
+            "y": 440,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 6,
+            "modifiers": []
+        },
+        {
+            "id": "card_8",
+            "type": "value",
+            "x": 380,
+            "y": 440,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 7,
+            "modifiers": []
+        },
+        {
+            "id": "card_9",
+            "type": "value",
+            "x": 320,
+            "y": 320,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 8,
+            "modifiers": []
+        },
+        {
+            "id": "card_10",
+            "type": "value",
+            "x": 290,
+            "y": 380,
+            "depth": 1,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 9,
+            "modifiers": []
+        },
+        {
+            "id": "card_11",
+            "type": "value",
+            "x": 350,
+            "y": 380,
+            "depth": 1,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 10,
+            "modifiers": []
+        },
+        {
+            "id": "card_12",
+            "type": "value",
+            "x": 320,
+            "y": 240,
+            "depth": 2,
+            "angle": 0,
+            "faceUp": true,
+            "random": true,
+            "sequence": 11,
+            "modifiers": []
+        },
+        {
+            "id": "card_13",
+            "type": "value",
+            "x": -60,
+            "y": 460,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 12,
+            "modifiers": []
+        },
+        {
+            "id": "card_14",
+            "type": "value",
+            "x": 60,
+            "y": 460,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 13,
+            "modifiers": []
+        },
+        {
+            "id": "card_15",
+            "type": "value",
+            "x": 0,
+            "y": 340,
+            "depth": 0,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 14,
+            "modifiers": []
+        },
+        {
+            "id": "card_16",
+            "type": "value",
+            "x": -60,
+            "y": 220,
+            "depth": 1,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 15,
+            "modifiers": []
+        },
+        {
+            "id": "card_17",
+            "type": "value",
+            "x": 60,
+            "y": 220,
+            "depth": 1,
+            "angle": 0,
+            "faceUp": false,
+            "random": true,
+            "sequence": 16,
+            "modifiers": []
+        },
+        {
+            "id": "card_18",
+            "type": "lock",
+            "x": -60,
+            "y": 340,
+            "depth": 2,
+            "angle": 0,
+            "faceUp": true,
+            "sequence": 17,
+            "modifiers": []
+        },
+        {
+            "id": "card_19",
+            "type": "lock",
+            "x": 60,
+            "y": 340,
+            "depth": 2,
+            "angle": 0,
+            "faceUp": true,
+            "sequence": 18,
+            "modifiers": []
+        },
+        {
+            "id": "card_20",
+            "type": "lock",
+            "x": 0,
+            "y": 460,
+            "depth": 2,
+            "angle": 0,
+            "faceUp": true,
+            "sequence": 19,
+            "modifiers": []
+        },
+        {
+            "id": "card_21",
+            "type": "value",
+            "x": -60,
+            "y": 150,
+            "depth": 3,
+            "angle": 0,
+            "faceUp": true,
+            "random": true,
+            "sequence": 20,
+            "modifiers": []
+        },
+        {
+            "id": "card_22",
+            "type": "value",
+            "x": 60,
+            "y": 150,
+            "depth": 3,
+            "angle": 0,
+            "faceUp": true,
+            "random": true,
+            "sequence": 21,
+            "modifiers": []
+        }
+    ],
+    "settings": {
+        "level_number": 101,
+        "background": "bg_austria_4.jpg",
+        "win_criteria": [
+            {
+                "type": "clear_all"
+            }
+        ],
+        "tags": [
+            "test",
+            "key_lock_flow"
+        ],
+        "cards_in_stack": [
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+        ],
+        "star_1": 350,
+        "star_2": 600,
+        "star_3": 950
+    }
+}

@@ -205,9 +205,9 @@ export interface TargetCalibrationData {
 
 export interface LevelAnalysisReport {
   levelId: string;
-  baseline: TargetCalibrationData;
   targetBrief: TargetCalibrationData;
-  targetPeak: TargetCalibrationData;
+  baseline?: TargetCalibrationData;
+  targetPeak?: TargetCalibrationData;
 }
 
 export interface SimulationSettings {

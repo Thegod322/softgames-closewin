@@ -220,4 +220,23 @@ export class SeedMiner {
       elapsedMs,
     };
   }
+
+  /**
+   * Fast single golden seed finder with random start offset.
+   */
+  public static mineSingleGoldenSeed(
+    levelJson: LevelJSON,
+    deckSize?: number,
+    startSeed: number = 1,
+    maxScan: number = 5000,
+    botConfig?: Partial<BotConfig>
+  ): GoldenSeedEntry | null {
+    const randomStart = Math.floor(Math.random() * 50000) + startSeed;
+    for (let i = 0; i < maxScan; i++) {
+      const seed = randomStart + i;
+      const verified = this.validateGoldenCloseWin(levelJson, seed, deckSize, botConfig, 1);
+      if (verified) return verified;
+    }
+    return null;
+  }
 }

@@ -5,7 +5,18 @@ export class JsonExporter {
     originalJson: LevelJSON,
     optimalDeckSize: number
   ): void {
+    const levelId = originalJson.id || 'level';
     const calibrated: LevelJSON = JSON.parse(JSON.stringify(originalJson));
+    calibrated.id = levelId;
+    if (!calibrated.settings) {
+      calibrated.settings = {
+        level_number: 1,
+        background: 'default',
+        win_criteria: [{ type: 'clear_all' }],
+        tags: [],
+        cards_in_stack: [],
+      };
+    }
     calibrated.settings.cards_in_stack = Array(optimalDeckSize).fill(-1);
 
     const jsonStr = JSON.stringify(calibrated, null, 4);
@@ -14,7 +25,7 @@ export class JsonExporter {
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${originalJson.id}_calibrated.json`;
+    a.download = `${levelId}_calibrated.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -218,8 +218,8 @@ export class ChartsView {
     centerVal: string,
     centerValColor: string,
     centerLbl: string,
-    size: number = 78,
-    strokeWidth: number = 11
+    size: number = 84,
+    strokeWidth: number = 12
   ): string {
     const center = size / 2;
     const radius = center - strokeWidth / 2 - 2;
@@ -250,9 +250,9 @@ export class ChartsView {
     return `
       <svg viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0;">
         ${pathsSvg}
-        <circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="#1e293b" />
-        <text x="${center}" y="${center - 1}" font-size="10.5" font-weight="800" fill="${centerValColor}" text-anchor="middle">${centerVal}</text>
-        <text x="${center}" y="${center + 8}" font-size="6.5" font-weight="600" fill="#94a3b8" text-anchor="middle">${centerLbl}</text>
+        <circle cx="${center}" cy="${center}" r="${radius - strokeWidth / 2}" fill="#0f172a" />
+        <text x="${center}" y="${center}" font-size="11.5" font-weight="800" fill="${centerValColor}" text-anchor="middle" font-family="monospace">${centerVal}</text>
+        <text x="${center}" y="${center + 9}" font-size="7" font-weight="600" fill="#94a3b8" text-anchor="middle">${centerLbl}</text>
       </svg>
     `;
   }
@@ -281,7 +281,9 @@ export class ChartsView {
       total,
       `${metrics.passRate.toFixed(1)}%`,
       '#22c55e',
-      'Pass Rate'
+      'Pass Rate',
+      84,
+      12
     );
 
     // 2. Winning Games Quality Slices (Inside Winning Games Only)
@@ -298,7 +300,9 @@ export class ChartsView {
       wins,
       `${cwr}%`,
       '#fbbf24',
-      'CWR'
+      'CWR',
+      84,
+      12
     );
 
     container.innerHTML = `
@@ -306,8 +310,8 @@ export class ChartsView {
         <!-- Donut 1: All Games Cohort Breakdown -->
         <div class="dual-donut-col">
           <div class="dual-donut-header">
-            <span class="col-title">🌍 All Games</span>
-            <span class="col-subtitle">All ${total.toLocaleString()} runs</span>
+            <span class="col-title">🌍 All Games Funnel</span>
+            <span class="col-subtitle">${total.toLocaleString()} runs</span>
           </div>
           <div class="dual-donut-body">
             ${svgAll}
@@ -316,6 +320,7 @@ export class ChartsView {
               <div class="dual-legend-row"><span class="legend-dot" style="background:#38bdf8;"></span><span class="legend-lbl">Std:</span><strong class="legend-pct">${((standardWins / total) * 100).toFixed(1)}%</strong></div>
               <div class="dual-legend-row"><span class="legend-dot" style="background:#c084fc;"></span><span class="legend-lbl">Miss:</span><strong class="legend-pct">${((metrics.nearMisses / total) * 100).toFixed(1)}%</strong></div>
               <div class="dual-legend-row"><span class="legend-dot" style="background:#64748b;"></span><span class="legend-lbl">Loss:</span><strong class="legend-pct">${((standardDeckLosses / total) * 100).toFixed(1)}%</strong></div>
+              ${metrics.bombLosses > 0 ? `<div class="dual-legend-row"><span class="legend-dot" style="background:#ef4444;"></span><span class="legend-lbl">Bomb:</span><strong class="legend-pct">${((metrics.bombLosses / total) * 100).toFixed(1)}%</strong></div>` : ''}
             </div>
           </div>
         </div>
@@ -324,13 +329,13 @@ export class ChartsView {
         <div class="dual-donut-col highlight-col">
           <div class="dual-donut-header">
             <span class="col-title" style="color: #fbbf24;">🏆 Win Quality</span>
-            <span class="col-subtitle">Inside ${wins} wins only</span>
+            <span class="col-subtitle">${wins.toLocaleString()} wins</span>
           </div>
           <div class="dual-donut-body">
             ${svgWins}
             <div class="dual-donut-legend">
-              <div class="dual-legend-row"><span class="legend-dot" style="background:#fbbf24;"></span><span class="legend-lbl">Close:</span><strong class="legend-pct" style="color:#fbbf24;">${cwr}%</strong></div>
-              <div class="dual-legend-row"><span class="legend-dot" style="background:#38bdf8;"></span><span class="legend-lbl">Std:</span><strong class="legend-pct">${stdWinQuality}%</strong></div>
+              <div class="dual-legend-row"><span class="legend-dot" style="background:#fbbf24;"></span><span class="legend-lbl">Close (≤2):</span><strong class="legend-pct" style="color:#fbbf24;">${cwr}%</strong></div>
+              <div class="dual-legend-row"><span class="legend-dot" style="background:#38bdf8;"></span><span class="legend-lbl">Std (3+):</span><strong class="legend-pct">${stdWinQuality}%</strong></div>
             </div>
           </div>
         </div>
@@ -338,7 +343,7 @@ export class ChartsView {
 
       <!-- Explainer Note -->
       <div class="dual-donuts-explainer">
-        <span>💡 <strong>All Games:</strong> воронка всех попыток (Pass / Loss). <strong>Win Quality:</strong> структура только побед (CWR).</span>
+        <span>💡 <strong>All Games:</strong> воронка всех попыток. <strong>Win Quality:</strong> структура только побед (CWR).</span>
       </div>
     `;
   }
