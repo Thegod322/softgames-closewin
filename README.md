@@ -2,6 +2,12 @@
 > **Technical Game Designer Take-Home Project**  
 > 100% Data-Driven Solitaire Tripeaks Playable Prototype & Monte Carlo Difficulty Calibration Suite.
 
+### 🚀 Quick Access Links:
+- 🎮 **Live Web Application (Game Prototype & Tuner):** [https://thegod322.github.io/softgames-closewin/](https://thegod322.github.io/softgames-closewin/)
+- ⏱️ **Interactive AI Development Timeline & Prompts:** [https://thegod322.github.io/softgames-closewin/timeline.html](https://thegod322.github.io/softgames-closewin/timeline.html)
+- 📄 **Full Candidate Delivery & Balancing Report:** [`CANDIDATE_REPORT.md`](./CANDIDATE_REPORT.md)
+- 📜 **Raw AI Conversation Transcripts:** [`transcripts/`](./transcripts/)
+
 ---
 
 ## 🌟 Executive Summary & Dual-Mode Calibration
