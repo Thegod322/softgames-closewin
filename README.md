@@ -20,7 +20,7 @@ In this suite, we provide **two complementary optimization modes**:
 
 ---
 
-### 📊 Production Calibration Benchmark ($N = 5,000$ per candidate)
+### 📊 Production Calibration Benchmark ($N = 2,000$ per candidate, Cohort of 1,000 Players)
 
 #### Mode A: Strict Brief Target (70% Close Win Rate)
 | Level ID | Mechanics & Modifiers | Brief Deck | Calibrated CWR | Pass Rate | Abs Close Wins (per 1k) | Near Misses (per 1k) |
@@ -108,22 +108,27 @@ Creates an optimized production bundle in `dist/` with full TypeScript type chec
 ---
 
 ## 🧠 AI-First Workflow & Engineering Report
+> 📄 **For the full in-depth write-up, game balancing analysis, and mathematical models, see [CANDIDATE_REPORT.md](./CANDIDATE_REPORT.md).**
 
-### Methodology
-1. **Domain Modeling & Task Decomposition**: Decomposed the project into 7 modular, test-driven tasks (`task_01` to `task_07`) with explicit verification gates.
-2. **Headless Engine Separation**: Built the state machine (`TripeaksEngine`) and spatial overlap graph (`CardGraph`) completely decoupled from DOM and rendering libraries, enabling high-speed parallel Monte Carlo simulations ($4,500+\text{ games/sec}$).
-3. **Information Set AI Agent (`MonteCarloBot`)**: Modeled human player heuristics (bomb defusal urgency $T \le 2$, key unlock prioritization, lookahead chain potential) without cheating on hidden cards.
+### 5-Step Production Pipeline
+1. **Ingestion, Research & Persistent Project Skill:** Researched Information Set Monte Carlo & Solitaire heuristic bots; codified all schemas, rules, and geometry into a persistent AI skill (`softgames-closewin`) to preserve domain context across all sessions; decomposed into modular task specs.
+2. **Autonomous Implementation & Human-in-the-Loop Feedback:** Agent executed tasks sequentially (Headless FSM ➔ Web Workers ➔ PixiJS v8 Canvas); operator tested builds in-browser, capturing game feel, occlusion nuances, and tactile feedback.
+3. **Analytical Balancing Discovery & LiveOps Synthesis:** Identified the survivorship bias in strict 70% CWR; formulated **Curated Golden Seeds** as the hero solution (100% winnable, maximum fun deals) alongside Mode B for casual LiveOps Near-Miss retention.
+4. **Milestone 2 Feature Expansion (Task 08):** Added 3-Persona Skill Sensitivity simulation (Casual $\epsilon=15\%$, Medium $\epsilon=3\%$, Expert $\epsilon=0\%$) and dynamic on-demand seed mining in Web Workers.
+5. **High-Density UI/UX Encapsulation:** Consolidated complex analytics into ~340px modular cards, Dual-Donut charts (All Games vs. Win Quality), and tactile developer controls.
 
-### Time Breakdown Comparison
+### Time Breakdown Comparison (from Conversation Transcripts)
 
 | Phase | Traditional Engineering | AI-First Workflow (Actual) | Time Saved |
 | :--- | :---: | :---: | :---: |
-| **Requirements, Research & Architecture** | 4 hours | 20 mins | **92%** |
-| **Data Modeling & Headless Engine** | 6 hours | 25 mins | **93%** |
-| **Vector Graphics & PixiJS Canvas View** | 8 hours | 35 mins | **93%** |
-| **Monte Carlo Agent & Auto-Tuner Dashboard** | 6 hours | 30 mins | **92%** |
-| **Level Calibration & PDF / Report Packaging** | 4 hours | 20 mins | **92%** |
-| **Total Project Duration** | **28 hours** | **~2.2 hours** | **~92% Faster** |
+| **Requirements, Research & Task Specs** | 4.0 hours | **5 mins** | **98%** |
+| **Headless Engine & PixiJS Prototype** | 8.0 hours | **12 mins** | **97%** |
+| **Geometry Overlaps, Modifiers & Game Feel** | 6.0 hours | **54 mins** | **85%** |
+| **Monte Carlo Bot, Bisection Auto-Tuner & Seeds** | 6.0 hours | **25 mins** | **93%** |
+| **Multi-Persona Benchmark & Dynamic Miner** | 8.0 hours | **1h 08m** | **86%** |
+| **Total Project Duration (2 Milestones, 6 Sessions)** | **~32 hours** | **2h 44m (Active AI)** | **~91.5% Faster** |
+
+👉 **[Explore the Interactive 44-Hour Visual Timeline & Prompts](https://thegod322.github.io/guapiko-timeline-viewer/)**
 
 ---
 

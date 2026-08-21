@@ -10,7 +10,7 @@
 
 ## 📌 Executive Summary & Deliverables Index
 
-This report accompanies the submission for the **Technical Game Designer ("Operation Close Win")** take-home project for Softgames. 
+This report accompanies the submission for the **Technical Game Designer ("Operation Close Win")** take-home project for Softgames.
 
 The project delivers a **100% data-driven, client-side web suite** built in TypeScript, PixiJS (v8), GSAP, and Web Workers. It directly addresses the core challenge: calibrating unbalanced Solitaire Tripeaks levels so that victories produce a high-tension **"Close Win"** emotional state (defined as $\le 2$ cards remaining in the draw pile), while preventing punishing churn.
 
@@ -21,69 +21,105 @@ The project delivers a **100% data-driven, client-side web suite** built in Type
 | **🎮 Playable Prototype** | WebGL/PixiJS v8 tactile prototype respecting $x, y, \text{depth}$, occlusions, all 4 card modifiers, and responsive scaling. | [Live Game Tab](https://thegod322.github.io/softgames-closewin/) |
 | **📊 Difficulty Tuner** | High-speed Monte Carlo simulator ($4,500+\text{ games/sec}$), Bisection Auto-Calibrator, Multi-Objective Peak Optimizer, and Dual-Donut analytics. | [Live Tuner Tab](https://thegod322.github.io/softgames-closewin/) |
 | **📁 4 Calibrated JSONs** | Production-ready calibrated JSONs for `level_25`, `level_31`, `level_43`, `level_54` for both Strict 70% CWR and Peak Retention. | [`data/levels/`](./data/levels/) |
-| **🧠 AI-First Write-Up** | Detailed breakdown of the rapid AI engineering architecture, task decomposition, and zero-asset procedural generation. | [Section 1 Below](#1-ai-first-workflow--rapid-engineering-architecture) |
-| **⏱️ Honest Time Breakdown** | Verifiable chrono-audit with exact timestamps, active AI vs gap times, and prompt distribution from conversation transcripts. | [Section 2 Below](#2-honest-chrono-audit--time-breakdown) & [Timeline Viewer](https://thegod322.github.io/softgames-closewin/timeline.html) |
-| **📜 Verbatim Transcripts** | Full, untruncated AI conversation logs (`transcript.jsonl`) for all 6 development milestones. | [`transcripts/`](./transcripts/) |
+| **🧠 AI-First Write-Up** | Detailed breakdown of the 5-step engineering pipeline: domain research, persistent project skill, human-in-the-loop playtesting, and UI optimization. | [Section 1 Below](#1-ai-first-production-pipeline--engineering-workflow) |
+| **⏱️ Honest Time Breakdown** | Verifiable chrono-audit with exact timestamps, active AI vs gap times, and prompt distribution from conversation transcripts. | [Section 2 Below](#2-honest-chrono-audit--time-breakdown) & [Timeline Viewer](https://thegod322.github.io/guapiko-timeline-viewer/) |
+| **📜 Verbatim Transcripts** | Full, untruncated AI conversation logs (`transcript.jsonl`) for all 6 development sessions. | [Transcripts Archive](https://github.com/Thegod322/guapiko-timeline-viewer/tree/main/transcripts) |
 
 ---
 
-## 1. AI-First Workflow & Rapid Engineering Architecture
+## 1. AI-First Production Pipeline & Engineering Workflow
 
-Building a production-grade WebGL game engine, a headless Monte Carlo simulator, an SVG analytics suite, and a dynamic seed miner in hours requires a strict **AI-Native Engineering Protocol**:
+To build a production-grade WebGL game engine, a headless Monte Carlo simulator, a Multi-Persona balancing suite, and an interactive seed miner in hours, I utilized a structured **5-Step Human-in-the-Loop AI Engineering Pipeline**:
 
 ```
-                       AI-FIRST PIPELINE ARCHITECTURE
- ┌──────────────────────┐      ┌─────────────────────────┐      ┌────────────────────────┐
- │   Domain Modeling    │ ───> │  Headless FSM Engine    │ ───> │ Multi-Threaded Workers │
- │ (Task Decomposition) │      │  (Zero DOM / Pure Math) │      │ (4,500+ sim/s in TS)   │
- └──────────────────────┘      └─────────────────────────┘      └────────────────────────┘
-            │                               │                               │
-            ▼                               ▼                               ▼
- ┌──────────────────────┐      ┌─────────────────────────┐      ┌────────────────────────┐
- │ Procedural Vector FX │ ───> │ PixiJS v8 Pure Game View│ ───> │ Multi-Persona Tuning   │
- │ (Zero Asset Bloat)   │      │ (Responsive Viewport)   │      │ (Casual, Core, Expert) │
- └──────────────────────┘      └─────────────────────────┘      └────────────────────────┘
+                       5-STEP AI-FIRST PRODUCTION PIPELINE
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │ 1. INGESTION, RESEARCH & PERSISTENT PROJECT SKILL                                      │
+ │    • Ingest brief & raw level JSONs                                                    │
+ │    • Deep research on Information Set Monte Carlo & Solitaire heuristic bots           │
+ │    • Create living "softgames-closewin" Skill (long-term memory across all AI chats)  │
+ │    • Decompose architecture into modular task specifications (Tasks 01–07)             │
+ └───────────────────────────────────────────┬────────────────────────────────────────────┘
+                                             │
+                                             ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │ 2. AUTONOMOUS IMPLEMENTATION & HUMAN-IN-THE-LOOP FEEDBACK LOOP                         │
+ │    • Agent executes task files sequentially (Headless FSM ➔ Web Workers ➔ PixiJS v8)  │
+ │    • Operator playtests builds in browser ➔ records game feel & edge-case notes        │
+ │    • Tight feedback loop: prompt iteration based on tactile feel & spatial occlusions  │
+ └───────────────────────────────────────────┬────────────────────────────────────────────┘
+                                             │
+                                             ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │ 3. ANALYTICAL BALANCING DISCOVERY & LIVEOPS SYNTHESIS                                  │
+ │    • Monte Carlo simulations reveal "Survivorship Bias" in strict 70% CWR (3% pass rate)│
+ │    • Hero Solution: Mining "Golden Seeds" (100% winnable, maximum fun in playtests)    │
+ │    • Alternative Solution: Mode B Peak Drama for casual LiveOps Near-Miss monetization│
+ └───────────────────────────────────────────┬────────────────────────────────────────────┘
+                                             │
+                                             ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │ 4. MILESTONE 2: FEATURE EXPANSION & MULTI-PERSONA BENCHMARK                            │
+ │    • Spec Task 08: 3 Player Personas (Casual, Core, Expert) & Dynamic On-Demand Mining │
+ │    • Background Web Workers scan ~8,000 seeds/s to guarantee deterministic yields      │
+ └───────────────────────────────────────────┬────────────────────────────────────────────┘
+                                             │
+                                             ▼
+ ┌────────────────────────────────────────────────────────────────────────────────────────┐
+ │ 5. HIGH-DENSITY UI/UX ENCAPSULATION                                                    │
+ │    • Consolidate heavy analytics into high-density ~340px modular cards                 │
+ │    • Dual-Donut visualization: All Games conversion vs Win Quality Close Win Rate      │
+ │    • Clean, distraction-free game layout focusing on pure gameplay flow                │
+ └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Key Architectural Pillars:
+### Deep Dive into the 5 Steps:
 
-1. **Markdown-Driven Development (MDD) & Task Decomposition**:
-   - The project was first decomposed into 8 atomic, isolated specifications with explicit verification gates (`task_01` to `task_08`).
-   - Each task defined exact input/output interfaces, error boundaries, and unit tests before any implementation code was generated.
-2. **Headless Engine / View Decoupling**:
-   - The core game logic (`TripeaksEngine`), card overlap physics (`CardGraph`), and heuristic bot (`MonteCarloBot`) are 100% decoupled from DOM, Canvas, and browser APIs.
-   - This architectural separation allows the exact same game rules to run inside headless Node.js unit tests, Web Workers at $4,500+\text{ games/sec}$, and the visual PixiJS canvas without code duplication.
-3. **Zero-Asset Procedural Vector Pipeline (`CardTextureFactory`)**:
-   - Instead of relying on heavy raster image files, all 52 card faces, royal blue diamond backs, golden chains, lock plates, bombs with animated timers, keys, and zap bolts are procedurally generated via code/SVG.
-   - **Result:** Zero missing assets, instant asset loading, and a complete production bundle of **only 465 kB**.
-4. **Non-Blocking Multi-Threaded Web Workers (`sim.worker.ts`)**:
-   - Monte Carlo batches (up to 10,000 runs) and dynamic seed mining routines execute on background Web Workers, keeping the UI at 60 FPS.
+#### Step 1: Ingestion, Research & Persistent Project Skill
+* **Domain & Algorithm Research:** Researched Information Set Monte Carlo (IS-MCTS), heuristic bot weightings, and Solitaire solvers (`bot_algorithms_research.md`, `SoftGames Research.md`).
+* **Living Project Skill (`softgames-closewin`):** Instead of relying on fragile one-off prompts, I formalized all domain rules, coordinate geometry formulas, modifier schemas, and architectural constraints into a custom AI Skill. This skill acted as a persistent memory bank, automatically keeping every subsequent AI session in sync.
+* **Task Decomposition:** Decomposed the project into modular task files (`task_01` to `task_07`) with explicit verification gates, test runners, and Definition of Done.
+
+#### Step 2: Autonomous Implementation & Human-in-the-Loop Feedback
+* **Execution:** AI subagents implemented the headless state machine (`TripeaksEngine`), spatial overlap graph (`CardGraph`), zero-asset vector renderer (`CardTextureFactory`), and PixiJS canvas view.
+* **Playtesting & Tactile Feedback:** As the operator, I playtested every build directly in browser, identifying subtle physical nuances that raw code generation misses—such as card height overlap threshold ($150\text{px}$ vs $144\text{px}$ spacing delta), bomb timer tick cadence, and smooth GSAP card flip transitions.
+
+#### Step 3: Analytical Balancing Discovery & LiveOps Synthesis
+* Running batch simulations revealed that blindly forcing a strict 70% Close Win Rate (CWR) created an aggressive mathematical paywall: deck sizes dropped to 13–16 cards, crashing pass rates to $2.6\%\text{--}4.5\%$.
+* **The Hero Solution — Curated Golden Seeds:** Mining deterministic seeds where a level is 100% winnable under calibrated hand sizes delivered extraordinary playtesting results—intense tension, zero frustration, and guaranteed close wins.
+* **Alternative LiveOps Balance (Mode B):** Provided a relaxed deck size baseline ($20\text{--}28$ cards) optimizing for $400+\text{ high-excitement games per 1,000}$ (Absolute Close Wins + Near Misses) with healthy $25\%\text{--}44\%$ pass rates.
+
+#### Step 4: Milestone 2 Feature Expansion (Task 08)
+* Formulated Task 08 to add **Multi-Persona sensitivity testing** (Casual $\epsilon=15\%$, Medium $\epsilon=3\%$, Expert $\epsilon=0\%$) and **Dynamic On-Demand Seed Mining** directly in Web Workers, removing any need for multi-megabyte static pre-mined seed files.
+
+#### Step 5: High-Density UI/UX Encapsulation
+* Converted raw simulation outputs into an intuitive dashboard: self-contained strategy cards (~340px), Dual-Donut statistical differentiation (All Games vs. Win Quality), and collapsible deep-dive drawers for manual parameter tweaking.
 
 ---
 
 ## 2. Honest Chrono-Audit & Time Breakdown
 
-To provide complete transparency (per Brief Part 3), we developed a custom analytics tool ([`timeline_analyzer.py`](../scripts/timeline_analyzer.py)) that parsed all local Antigravity conversation transcripts (`transcript.jsonl`) to compute exact timestamps, tool executions, and active development versus idle/playtesting gaps.
+To provide complete transparency (per Brief Part 3), we developed a custom analytics tool ([`timeline_analyzer.py`](../scripts/timeline_analyzer.py)) that parsed all local conversation transcripts (`transcript.jsonl`) to compute exact timestamps, active AI development time, and idle/playtesting gaps.
 
 ### ⏱️ High-Level Project Timeline Overview
 - **Total Calendar Span (Wall-Clock):** 44 hours (Aug 18, 22:10 ➔ Aug 20, 18:10)
 - **⚡ Total Active AI Development Time:** **2 hours 44 minutes** (6.2% density)
-- **⏸️ Total Gap Time (Breaks, Sleep, Manual Playtesting & Design Analysis):** 41 hours 17 minutes
-- **💬 Total Engineer-to-AI Turns:** 47 turns across 6 structured milestones
+- **⏸️ Total Gap Time (Sleep, Breaks, Manual Playtesting & Design Reflection):** 41 hours 17 minutes
+- **💬 Total Engineer-to-AI Turns:** 47 turns across **6 development sessions (2 major milestones)**
 
-### 📊 Development Phase Distribution
+### 📊 Breakdown by Development Sessions & Milestones
 
-| Phase | Milestone / Focus | Active AI Time | Turns | % of Work | Traditional Estimate | Time Saved |
+| Milestone | Session / Focus | Active AI Time | Turns | % of Work | Traditional Estimate | Time Saved |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Phase 1** | Requirements Research, TRIZ Architecture & Task Spec | **4m 56s** | 7 | 3.0% | 4.0 hours | **98%** |
-| **Phase 2** | Headless Engine, Overlap Graph & PixiJS Prototype | **12m 22s** | 7 | 7.5% | 8.0 hours | **97%** |
-| **Phase 3** | Spatial Geometry, Depth Overlap Tuning & Modifiers | **53m 55s** | 8 | 32.8% | 6.0 hours | **85%** |
-| **Phase 4** | Monte Carlo Bot, Bisection Auto-Tuner & Seed Mining | **25m 12s** | 12 | 15.3% | 6.0 hours | **93%** |
-| **Phase 5** | Multi-Persona Benchmark Specification (Task 08) | **4m 13s** | 2 | 2.5% | 2.0 hours | **96%** |
-| **Phase 6** | 3-Persona Engine, Dynamic Golden Seeds & High-Density UI | **1h 03m** | 11 | 38.9% | 6.0 hours | **82%** |
-| **Total** | **Complete Full-Cycle Project Delivery** | **2h 44m** | **47** | **100%** | **~32 hours** | **~91.5% Faster** |
+| **Milestone 1: Core MVP** | **Chat 1:** Requirements, Architecture & Task Spec | **4m 56s** | 7 | 3.0% | 4.0 hours | **98%** |
+| | **Chat 2:** Headless FSM, Graph & PixiJS Prototype | **12m 22s** | 7 | 7.5% | 8.0 hours | **97%** |
+| | **Chat 3:** Geometry, Overlap Tuning & Modifiers | **53m 55s** | 8 | 32.8% | 6.0 hours | **85%** |
+| | **Chat 4:** Monte Carlo Bot, Bisection Tuner & Seeds | **25m 12s** | 12 | 15.3% | 6.0 hours | **93%** |
+| **Milestone 2: Polish & Personas** | **Chat 5:** Multi-Persona Spec & UI Architecture | **4m 13s** | 2 | 2.5% | 2.0 hours | **96%** |
+| | **Chat 6:** 3-Persona Engine, Dynamic Miner & UI | **1h 03m** | 11 | 38.9% | 6.0 hours | **82%** |
+| **Total** | **Full-Cycle Delivery (2 Milestones, 6 Sessions)** | **2h 44m** | **47** | **100%** | **~32 hours** | **~91.5% Faster** |
 
-### 🔍 Effort Breakdown: Development vs. Prompting vs. Tuning
+### 🔍 Effort Breakdown: Prompting vs. Code Gen vs. Playtesting/Tuning
 
 ```
   ┌─────────────────────────┬──────────────────────────┬─────────────────────────────┐
@@ -92,7 +128,7 @@ To provide complete transparency (per Brief Part 3), we developed a custom analy
   └─────────────────────────┴──────────────────────────┴─────────────────────────────┘
 ```
 
-> **Takeaway:** Over 50% of the active effort was spent on **game feel validation, balance verification, and mathematical edge-case analysis** (e.g. diagnosing survivorship bias in the CWR formula and perfecting the spatial card overlap thresholds), while AI handled 100% of the boilerplate, data structures, and WebGL rendering code.
+> **Key Takeaway:** Over 50% of the active effort was dedicated to **game feel validation, balance verification, and mathematical edge-case analysis** (e.g. diagnosing survivorship bias in the CWR formula and perfecting the spatial card overlap thresholds), while AI handled 100% of the boilerplate, data structures, and WebGL rendering code.
 
 👉 **[Explore the Interactive 44-Hour Visual Timeline](https://thegod322.github.io/guapiko-timeline-viewer/)**
 
@@ -100,7 +136,7 @@ To provide complete transparency (per Brief Part 3), we developed a custom analy
 
 ## 3. Game Design & Balancing Analysis
 
-### A. The Core Balancing Benchmark ($N = 5,000$ per Level)
+### A. The Core Balancing Benchmark ($N = 2,000$ Simulations per Level)
 
 #### Mode A: Strict Brief Target ($CWR \approx 70\% \pm 2\%$)
 Calibrated via automated bisection search targeting $\text{Close Win Rate} \ge 70\%$:
@@ -122,10 +158,9 @@ $$\text{CWR} = P(\text{Remainder} \le 2 \mid \text{Win}) = \frac{N_{\text{wins w
 
 1. **The Punitive Paywall Problem:** Because CWR is a **conditional probability**, forcing $70\%$ CWR restricts deck size so severely ($13\text{--}16$ cards) that overall Pass Rate crashes to **$2.6\%\text{--}4.5\%$**. 
 2. **Player Experience Reality:** In Mode A, $96\%$ of players lose early with $10+$ cards remaining on the board. Only $20\text{--}30$ players per $1,000$ ever experience a Close Win.
-3. **The LiveOps Solution (Mode B — Multi-Objective Peak Drama):** By balancing for **Absolute Close Wins** + **Near Misses** ($\le 2$ cards left on board on loss), we achieve:
-   - **$7\times\text{ more}$ Absolute Close Wins** ($110\text{--}134$ players per $1,000$).
-   - **$3\times\text{ more}$ Near Misses** ($250\text{--}280$ players per $1,000$), driving high-converting $"+5\text{ Extra Cards}"$ IAA/IAP prompts.
-   - Healthy, sustainable casual pass rates of **$25\%\text{--}44\%$**.
+3. **The LiveOps Synthesis:**
+   - **🌟 Solution 1 (Curated Golden Seeds — The Hero Solution):** By mining deterministic golden seeds for any target hand size, we guarantee that the deal is **100% winnable** and finishes as a Close Win. In playtesting, this delivers pure flow, thrilling finishes, and zero unrewarding failures.
+   - **⚡ Solution 2 (Mode B — Alternative Multi-Objective Balance):** For random-deal LiveOps, Mode B expands deck sizes ($20\text{--}28$ cards) to maximize **Absolute Close Wins** + **Near Misses** ($\le 2$ cards left on board on loss), providing **$400+\text{ high-excitement games per 1,000}$** with healthy $25\%\text{--}44\%$ pass rates.
 
 #### Mode B: Multi-Objective Absolute Peak (Balanced Retention & Near Misses)
 | Level ID | Mechanics & Modifiers | Peak Deck Size | Pass Rate | CWR | Abs Close Wins (per 1k) | Near Misses (per 1k) | Total High Drama |
@@ -152,9 +187,26 @@ To ensure levels reward skillful play while remaining accessible, the engine tes
 
 ---
 
-## 4. Technical Assumptions & Math Specification
+### D. Why Seed Mining & Multiple Target Projections Were Built
 
-Per the brief's instruction (*"If you come across any fields in the JSON that aren't explained here, make reasonable assumptions and describe them"*), the following deterministic models were implemented:
+The Difficulty Tuner was engineered not just as a static calculator, but as a **complete Game Designer Workbench**:
+1. **Strict Brief Target (70% CWR):** Allows immediate verification of the exact mathematical prompt in the take-home brief.
+2. **Multi-Objective Peak (Retention & Near Misses):** Provides live-service economy context for monetizable near-miss triggers.
+3. **Dynamic Golden Seed Miner (`SeedMiner`):** Runs parallel Web Workers scanning ~8,000 seeds/s to extract verified winnable seeds for any hand size, allowing designers to curate level sequences where every player experiences handcrafted triumph.
+4. **Single Seed Deep-Dive Inspector:** Allows designers to inspect seed metadata (solvability, max streak, remaining cards) and jump directly into the Playable Prototype (`🎮 Play This Seed`) to experience the deal firsthand.
+
+---
+
+## 4. Game Feel, Visual Polish & Technical Assumptions
+
+### A. Game Feel & Tactile Flow
+A balancing tool is useless if the designer cannot feel the rhythm of the cards:
+- **Zero-Asset Procedural Clarity:** Code-rendered vector cards ensure instant load times with zero visual fuzziness across retina and high-DPI screens.
+- **Occlusion Feedback:** Fully covered cards display royal blue diamond backs; partially covered cards indicate depth resistance; playable cards display crisp, high-contrast face values.
+- **Juice & Motion FX:** Smooth GSAP bezier curves for card draws, waste pile stacking, uplifting key collection dissolves, and subtle lock shake animations upon invalid interaction.
+- **Responsive Dynamic Viewport (`BoardLayout.scale`):** Dynamic coordinate scaling ensuring optimal card spacing whether viewed on an iPhone screen, iPad, or 4K desktop monitor.
+
+### B. Mathematical Formats & Mechanics Logic
 
 1. **2D Spatial Overlap & Occlusion Formula**:
    - Card dimensions in level space: $W = 100\text{px}, H = 150\text{px}$.
@@ -174,9 +226,8 @@ Per the brief's instruction (*"If you come across any fields in the JSON that ar
 
 ## 5. Summary & Handover
 
-This project demonstrates how an **AI Technical Game Designer** combines deep game balancing theory, mathematical rigour, and rapid AI workflow orchestration to deliver production-ready tools in hours.
+This project demonstrates how an **AI Technical Game Designer** blends game balancing intuition, live-ops retention models, and rigorous AI workflow engineering to deliver production-ready studio tooling in hours.
 
 - **Live Application:** [https://thegod322.github.io/softgames-closewin/](https://thegod322.github.io/softgames-closewin/)
 - **Interactive Chrono-Audit:** [https://thegod322.github.io/guapiko-timeline-viewer/](https://thegod322.github.io/guapiko-timeline-viewer/)
 - **Source Code & Data:** [https://github.com/Thegod322/softgames-closewin](https://github.com/Thegod322/softgames-closewin)
-
