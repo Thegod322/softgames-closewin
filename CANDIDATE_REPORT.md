@@ -3,7 +3,8 @@
 > **Candidate:** Arkady Krutius  
 > **Repository:** [github.com/Thegod322/softgames-closewin](https://github.com/Thegod322/softgames-closewin)  
 > **Live Prototype & Tuner:** [thegod322.github.io/softgames-closewin](https://thegod322.github.io/softgames-closewin/)  
-> **Interactive Timeline & Prompts Audit:** [thegod322.github.io/softgames-closewin/timeline.html](https://thegod322.github.io/softgames-closewin/timeline.html)  
+> **Interactive Timeline & Prompts Audit:** [thegod322.github.io/guapiko-timeline-viewer](https://thegod322.github.io/guapiko-timeline-viewer/)  
+> **Transcripts Repository:** [github.com/Thegod322/guapiko-timeline-viewer](https://github.com/Thegod322/guapiko-timeline-viewer)  
 
 ---
 
@@ -93,7 +94,7 @@ To provide complete transparency (per Brief Part 3), we developed a custom analy
 
 > **Takeaway:** Over 50% of the active effort was spent on **game feel validation, balance verification, and mathematical edge-case analysis** (e.g. diagnosing survivorship bias in the CWR formula and perfecting the spatial card overlap thresholds), while AI handled 100% of the boilerplate, data structures, and WebGL rendering code.
 
-👉 **[Explore the Interactive 44-Hour Visual Timeline](https://thegod322.github.io/softgames-closewin/timeline.html)**
+👉 **[Explore the Interactive 44-Hour Visual Timeline](https://thegod322.github.io/guapiko-timeline-viewer/)**
 
 ---
 
@@ -176,5 +177,6 @@ Per the brief's instruction (*"If you come across any fields in the JSON that ar
 This project demonstrates how an **AI Technical Game Designer** combines deep game balancing theory, mathematical rigour, and rapid AI workflow orchestration to deliver production-ready tools in hours.
 
 - **Live Application:** [https://thegod322.github.io/softgames-closewin/](https://thegod322.github.io/softgames-closewin/)
-- **Interactive Chrono-Audit:** [https://thegod322.github.io/softgames-closewin/timeline.html](https://thegod322.github.io/softgames-closewin/timeline.html)
+- **Interactive Chrono-Audit:** [https://thegod322.github.io/guapiko-timeline-viewer/](https://thegod322.github.io/guapiko-timeline-viewer/)
 - **Source Code & Data:** [https://github.com/Thegod322/softgames-closewin](https://github.com/Thegod322/softgames-closewin)
+
