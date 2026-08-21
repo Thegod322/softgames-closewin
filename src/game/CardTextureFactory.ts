@@ -35,8 +35,8 @@ export class CardTextureFactory {
   private static instance: CardTextureFactory;
   private textureCache: Map<string, Texture> = new Map();
   private scale: number = 2; // High-DPI canvas generation scale
-  public width: number = 80;
-  public height: number = 112;
+  public width: number = 100;
+  public height: number = 140;
 
   private constructor() {}
 
@@ -67,10 +67,10 @@ export class CardTextureFactory {
     const color = SUIT_COLORS[suit];
 
     // Card Body (White rounded rect with subtle shadow and border)
-    const radius = 8 * this.scale;
+    const radius = 10 * this.scale;
     ctx.fillStyle = '#ffffff';
-    ctx.strokeStyle = '#b0bec5';
-    ctx.lineWidth = 2 * this.scale;
+    ctx.strokeStyle = '#cbd5e1';
+    ctx.lineWidth = 2.5 * this.scale;
 
     this.roundRect(ctx, 2, 2, w - 4, h - 4, radius);
     ctx.fill();
@@ -78,22 +78,22 @@ export class CardTextureFactory {
 
     // Top-left Corner Rank & Suit
     ctx.fillStyle = color;
-    ctx.font = `bold ${16 * this.scale}px "Segoe UI", Roboto, sans-serif`;
+    ctx.font = `bold ${18 * this.scale}px "Segoe UI", Roboto, sans-serif`;
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(rankLabel, 8 * this.scale, 6 * this.scale);
+    ctx.fillText(rankLabel, 10 * this.scale, 8 * this.scale);
 
-    ctx.font = `${14 * this.scale}px "Segoe UI", Roboto, sans-serif`;
-    ctx.fillText(suitSymbol, 8 * this.scale, 24 * this.scale);
+    ctx.font = `${16 * this.scale}px "Segoe UI", Roboto, sans-serif`;
+    ctx.fillText(suitSymbol, 10 * this.scale, 28 * this.scale);
 
     // Center Large Rank & Suit
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.font = `bold ${34 * this.scale}px "Segoe UI", Roboto, sans-serif`;
+    ctx.font = `bold ${40 * this.scale}px "Segoe UI", Roboto, sans-serif`;
     ctx.fillText(rankLabel, w / 2, h / 2 - 4 * this.scale);
 
-    ctx.font = `${20 * this.scale}px "Segoe UI", Roboto, sans-serif`;
-    ctx.fillText(suitSymbol, w / 2 + 18 * this.scale, h / 2 - 16 * this.scale);
+    ctx.font = `${24 * this.scale}px "Segoe UI", Roboto, sans-serif`;
+    ctx.fillText(suitSymbol, w / 2 + 22 * this.scale, h / 2 - 18 * this.scale);
 
     const texture = Texture.from(canvas);
     this.textureCache.set(key, texture);
@@ -154,6 +154,109 @@ export class CardTextureFactory {
     return texture;
   }
 
+  public getLockCardTexture(): Texture {
+    const key = 'card_lock_full';
+    if (this.textureCache.has(key)) {
+      return this.textureCache.get(key)!;
+    }
+
+    const canvas = document.createElement('canvas');
+    const w = this.width * this.scale;
+    const h = this.height * this.scale;
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return Texture.WHITE;
+
+    const radius = 10 * this.scale;
+
+    // Outer border
+    ctx.fillStyle = '#3e2723';
+    this.roundRect(ctx, 0, 0, w, h, radius);
+    ctx.fill();
+
+    // Wooden background
+    const margin = 3 * this.scale;
+    const woodGrad = ctx.createLinearGradient(0, 0, w, h);
+    woodGrad.addColorStop(0, '#5d4037');
+    woodGrad.addColorStop(0.5, '#4e342e');
+    woodGrad.addColorStop(1, '#3e2723');
+    ctx.fillStyle = woodGrad;
+    this.roundRect(ctx, margin, margin, w - margin * 2, h - margin * 2, radius - 2 * this.scale);
+    ctx.fill();
+
+    // Wood grain horizontal planks
+    ctx.strokeStyle = '#271c19';
+    ctx.lineWidth = 1.5 * this.scale;
+    for (let y = margin + 24 * this.scale; y < h - margin; y += 26 * this.scale) {
+      ctx.beginPath();
+      ctx.moveTo(margin, y);
+      ctx.lineTo(w - margin, y);
+      ctx.stroke();
+    }
+
+    // Heavy Golden Chains (Crossed)
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 4 * this.scale;
+    ctx.beginPath();
+    ctx.moveTo(margin, margin);
+    ctx.lineTo(w - margin, h - margin);
+    ctx.moveTo(w - margin, margin);
+    ctx.lineTo(margin, h - margin);
+    ctx.stroke();
+
+    // Chain links highlight
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 2 * this.scale;
+    ctx.beginPath();
+    ctx.moveTo(margin + 10, margin + 10);
+    ctx.lineTo(w - margin - 10, h - margin - 10);
+    ctx.moveTo(w - margin - 10, margin + 10);
+    ctx.lineTo(margin + 10, h - margin - 10);
+    ctx.stroke();
+
+    // Central Padlock Body
+    const lockSize = 38 * this.scale;
+    const cx = w / 2;
+    const cy = h / 2 + 4 * this.scale;
+
+    // Padlock Shackle
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 4 * this.scale;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 14 * this.scale, 12 * this.scale, Math.PI, 0);
+    ctx.stroke();
+
+    // Padlock Body
+    const lockGrad = ctx.createLinearGradient(cx - lockSize / 2, cy - lockSize / 2, cx + lockSize / 2, cy + lockSize / 2);
+    lockGrad.addColorStop(0, '#f59e0b');
+    lockGrad.addColorStop(1, '#b45309');
+    ctx.fillStyle = lockGrad;
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 2 * this.scale;
+    this.roundRect(ctx, cx - lockSize / 2, cy - lockSize / 2 + 4 * this.scale, lockSize, lockSize * 0.85, 6 * this.scale);
+    ctx.fill();
+    ctx.stroke();
+
+    // Keyhole
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.arc(cx, cy + 2 * this.scale, 4 * this.scale, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx - 2.5 * this.scale, cy + 3 * this.scale);
+    ctx.lineTo(cx + 2.5 * this.scale, cy + 3 * this.scale);
+    ctx.lineTo(cx + 4 * this.scale, cy + 12 * this.scale);
+    ctx.lineTo(cx - 4 * this.scale, cy + 12 * this.scale);
+    ctx.closePath();
+    ctx.fill();
+
+    const texture = Texture.from(canvas);
+    this.textureCache.set(key, texture);
+    return texture;
+  }
+
   public getLockOverlayTexture(): Texture {
     const key = 'lock_overlay';
     if (this.textureCache.has(key)) {
@@ -162,53 +265,234 @@ export class CardTextureFactory {
 
     const canvas = document.createElement('canvas');
     const w = this.width * this.scale;
-    const h = (this.height * 0.6) * this.scale;
+    const h = this.height * this.scale;
     canvas.width = w;
     canvas.height = h;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return Texture.WHITE;
 
-    // Wooden Plate
-    const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0, '#d7ccc8');
-    grad.addColorStop(0.5, '#bcaaa4');
-    grad.addColorStop(1, '#8d6e63');
-    ctx.fillStyle = grad;
-    ctx.strokeStyle = '#5d4037';
-    ctx.lineWidth = 2 * this.scale;
+    const radius = 10 * this.scale;
 
-    this.roundRect(ctx, 4 * this.scale, 4 * this.scale, w - 8 * this.scale, h - 8 * this.scale, 6 * this.scale);
+    // Semi-transparent dark tint over card face
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.45)';
+    this.roundRect(ctx, 2, 2, w - 4, h - 4, radius);
+    ctx.fill();
+
+    // Heavy Golden Chains (Crossed)
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 3.5 * this.scale;
+    ctx.beginPath();
+    ctx.moveTo(4 * this.scale, 4 * this.scale);
+    ctx.lineTo(w - 4 * this.scale, h - 4 * this.scale);
+    ctx.moveTo(w - 4 * this.scale, 4 * this.scale);
+    ctx.lineTo(4 * this.scale, h - 4 * this.scale);
+    ctx.stroke();
+
+    // Chain links highlight
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 1.8 * this.scale;
+    ctx.beginPath();
+    ctx.moveTo(12 * this.scale, 12 * this.scale);
+    ctx.lineTo(w - 12 * this.scale, h - 12 * this.scale);
+    ctx.moveTo(w - 12 * this.scale, 12 * this.scale);
+    ctx.lineTo(12 * this.scale, h - 12 * this.scale);
+    ctx.stroke();
+
+    // Central Padlock Body
+    const lockSize = 34 * this.scale;
+    const cx = w / 2;
+    const cy = h / 2;
+
+    // Padlock Shackle
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 3.5 * this.scale;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 12 * this.scale, 10 * this.scale, Math.PI, 0);
+    ctx.stroke();
+
+    // Padlock Body
+    const lockGrad = ctx.createLinearGradient(cx - lockSize / 2, cy - lockSize / 2, cx + lockSize / 2, cy + lockSize / 2);
+    lockGrad.addColorStop(0, '#fbbf24');
+    lockGrad.addColorStop(1, '#b45309');
+    ctx.fillStyle = lockGrad;
+    ctx.strokeStyle = '#78350f';
+    ctx.lineWidth = 2 * this.scale;
+    this.roundRect(ctx, cx - lockSize / 2, cy - lockSize / 2 + 2 * this.scale, lockSize, lockSize * 0.85, 5 * this.scale);
     ctx.fill();
     ctx.stroke();
 
-    // Keyhole in Center
-    ctx.fillStyle = '#212121';
+    // Keyhole
+    ctx.fillStyle = '#1e293b';
     ctx.beginPath();
-    ctx.arc(w / 2, h / 2 - 4 * this.scale, 6 * this.scale, 0, Math.PI * 2);
+    ctx.arc(cx, cy + 1 * this.scale, 3.5 * this.scale, 0, Math.PI * 2);
     ctx.fill();
-
     ctx.beginPath();
-    ctx.moveTo(w / 2 - 4 * this.scale, h / 2 - 2 * this.scale);
-    ctx.lineTo(w / 2 + 4 * this.scale, h / 2 - 2 * this.scale);
-    ctx.lineTo(w / 2 + 6 * this.scale, h / 2 + 10 * this.scale);
-    ctx.lineTo(w / 2 - 6 * this.scale, h / 2 + 10 * this.scale);
+    ctx.moveTo(cx - 2 * this.scale, cy + 2 * this.scale);
+    ctx.lineTo(cx + 2 * this.scale, cy + 2 * this.scale);
+    ctx.lineTo(cx + 3.5 * this.scale, cy + 10 * this.scale);
+    ctx.lineTo(cx - 3.5 * this.scale, cy + 10 * this.scale);
     ctx.closePath();
     ctx.fill();
 
-    // Golden Chains across plate
-    ctx.strokeStyle = '#ffb300';
-    ctx.lineWidth = 3 * this.scale;
+    const texture = Texture.from(canvas);
+    this.textureCache.set(key, texture);
+    return texture;
+  }
+
+  public getKeyCardTexture(): Texture {
+    const key = 'card_key_full';
+    if (this.textureCache.has(key)) {
+      return this.textureCache.get(key)!;
+    }
+
+    const canvas = document.createElement('canvas');
+    const w = this.width * this.scale;
+    const h = this.height * this.scale;
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return Texture.WHITE;
+
+    const radius = 10 * this.scale;
+
+    // Gold Outer Border
+    ctx.fillStyle = '#f59e0b';
+    this.roundRect(ctx, 0, 0, w, h, radius);
+    ctx.fill();
+
+    // Mystic Indigo Velvet Background
+    const margin = 3 * this.scale;
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+    bgGrad.addColorStop(0, '#1e1b4b');
+    bgGrad.addColorStop(0.5, '#312e81');
+    bgGrad.addColorStop(1, '#0f172a');
+    ctx.fillStyle = bgGrad;
+    this.roundRect(ctx, margin, margin, w - margin * 2, h - margin * 2, radius - 2 * this.scale);
+    ctx.fill();
+
+    // Inner glowing ring
+    const cx = w / 2;
+    const cy = h / 2;
+
+    const glowGrad = ctx.createRadialGradient(cx, cy, 5 * this.scale, cx, cy, 40 * this.scale);
+    glowGrad.addColorStop(0, 'rgba(251, 191, 36, 0.35)');
+    glowGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+    ctx.fillStyle = glowGrad;
     ctx.beginPath();
-    ctx.moveTo(0, 0);
-    ctx.lineTo(w / 2 - 8 * this.scale, h / 2);
-    ctx.moveTo(w, 0);
-    ctx.lineTo(w / 2 + 8 * this.scale, h / 2);
-    ctx.moveTo(0, h);
-    ctx.lineTo(w / 2 - 8 * this.scale, h / 2);
-    ctx.moveTo(w, h);
-    ctx.lineTo(w / 2 + 8 * this.scale, h / 2);
+    ctx.arc(cx, cy, 42 * this.scale, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Large Ornate Golden Key
+    ctx.strokeStyle = '#fbbf24';
+    ctx.fillStyle = '#f59e0b';
+    ctx.lineWidth = 3.5 * this.scale;
+
+    // Key Bow (Ring) at top
+    const ringY = cy - 24 * this.scale;
+    ctx.beginPath();
+    ctx.arc(cx, ringY, 13 * this.scale, 0, Math.PI * 2);
     ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(cx, ringY, 7 * this.scale, 0, Math.PI * 2);
+    ctx.fillStyle = '#1e1b4b';
+    ctx.fill();
+    ctx.stroke();
+
+    // Key Stem
+    ctx.strokeStyle = '#fbbf24';
+    ctx.lineWidth = 4.5 * this.scale;
+    ctx.beginPath();
+    ctx.moveTo(cx, ringY + 13 * this.scale);
+    ctx.lineTo(cx, cy + 32 * this.scale);
+    ctx.stroke();
+
+    // Key Bit / Teeth
+    ctx.lineWidth = 4 * this.scale;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + 18 * this.scale);
+    ctx.lineTo(cx + 12 * this.scale, cy + 18 * this.scale);
+    ctx.moveTo(cx, cy + 28 * this.scale);
+    ctx.lineTo(cx + 14 * this.scale, cy + 28 * this.scale);
+    ctx.stroke();
+
+    // Top & bottom label
+    ctx.fillStyle = '#fbbf24';
+    ctx.font = `bold ${10 * this.scale}px "Segoe UI", Roboto, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('KEY', cx, h - 10 * this.scale);
+
+    const texture = Texture.from(canvas);
+    this.textureCache.set(key, texture);
+    return texture;
+  }
+
+  public getZapCardTexture(): Texture {
+    const key = 'card_zap_full';
+    if (this.textureCache.has(key)) {
+      return this.textureCache.get(key)!;
+    }
+
+    const canvas = document.createElement('canvas');
+    const w = this.width * this.scale;
+    const h = this.height * this.scale;
+    canvas.width = w;
+    canvas.height = h;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return Texture.WHITE;
+
+    const radius = 10 * this.scale;
+
+    // Yellow Outer Border
+    ctx.fillStyle = '#eab308';
+    this.roundRect(ctx, 0, 0, w, h, radius);
+    ctx.fill();
+
+    // Dark Electric Plasma Background
+    const margin = 3 * this.scale;
+    const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+    bgGrad.addColorStop(0, '#0c4a6e');
+    bgGrad.addColorStop(0.5, '#075985');
+    bgGrad.addColorStop(1, '#082f49');
+    ctx.fillStyle = bgGrad;
+    this.roundRect(ctx, margin, margin, w - margin * 2, h - margin * 2, radius - 2 * this.scale);
+    ctx.fill();
+
+    const cx = w / 2;
+    const cy = h / 2;
+
+    // Glowing Radial Burst
+    const glowGrad = ctx.createRadialGradient(cx, cy, 6 * this.scale, cx, cy, 45 * this.scale);
+    glowGrad.addColorStop(0, 'rgba(253, 224, 71, 0.4)');
+    glowGrad.addColorStop(1, 'rgba(253, 224, 71, 0)');
+    ctx.fillStyle = glowGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 45 * this.scale, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Lightning Bolt
+    ctx.fillStyle = '#fef08a';
+    ctx.strokeStyle = '#ca8a04';
+    ctx.lineWidth = 2.5 * this.scale;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + 8 * this.scale, cy - 35 * this.scale);
+    ctx.lineTo(cx - 16 * this.scale, cy + 2 * this.scale);
+    ctx.lineTo(cx - 2 * this.scale, cy + 2 * this.scale);
+    ctx.lineTo(cx - 10 * this.scale, cy + 35 * this.scale);
+    ctx.lineTo(cx + 18 * this.scale, cy - 8 * this.scale);
+    ctx.lineTo(cx + 4 * this.scale, cy - 8 * this.scale);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#fef08a';
+    ctx.font = `bold ${10 * this.scale}px "Segoe UI", Roboto, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText('ZAP', cx, h - 10 * this.scale);
 
     const texture = Texture.from(canvas);
     this.textureCache.set(key, texture);
@@ -322,6 +606,7 @@ export class CardTextureFactory {
     this.textureCache.set(key, texture);
     return texture;
   }
+
 
   private roundRect(
     ctx: CanvasRenderingContext2D,

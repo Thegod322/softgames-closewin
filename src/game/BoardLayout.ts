@@ -44,12 +44,15 @@ export class BoardLayout {
     const boardH = maxY - minY;
 
     // Target playable board area: top 70% of canvas, with 40px margins
-    const targetAreaW = width - 80;
+    const targetAreaW = width - 100;
     const targetAreaH = height * 0.68 - 40;
 
     const scaleX = targetAreaW / (boardW || 1);
     const scaleY = targetAreaH / (boardH || 1);
-    this.scale = Math.min(1.0, Math.min(scaleX, scaleY));
+    
+    // Scale 1.5x smaller for clean, balanced visual proportions
+    const rawFitScale = Math.min(scaleX, scaleY);
+    this.scale = Math.min(0.68, rawFitScale * (1 / 1.5));
 
     // Center board area horizontally and in top section
     const scaledBoardW = boardW * this.scale;
@@ -61,11 +64,11 @@ export class BoardLayout {
     // Place Deck & Waste pile in bottom area
     const bottomY = height - (CARD_HEIGHT * this.scale) / 2 - 24;
     this.deckPos = {
-      x: width * 0.35,
+      x: width * 0.40,
       y: bottomY,
     };
     this.wastePos = {
-      x: width * 0.55,
+      x: width * 0.58,
       y: bottomY,
     };
   }

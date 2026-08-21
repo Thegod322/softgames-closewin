@@ -23,11 +23,18 @@ interface LevelReportRow {
   origDeck: number;
   origCwr: number;
   origPass: number;
-  calibDeck: number;
-  calibCwr: number;
-  calibPass: number;
-  medianRem: number;
-  bombLossRate: number;
+  origNearMiss: number;
+  briefDeck: number;
+  briefCwr: number;
+  briefPass: number;
+  briefAbsClose: number;
+  briefNearMiss: number;
+  peakDeck: number;
+  peakCwr: number;
+  peakPass: number;
+  peakAbsClose: number;
+  peakNearMiss: number;
+  peakTotalDrama: number;
 }
 
 const summaryTable: LevelReportRow[] = [];
@@ -41,17 +48,27 @@ for (const lvlId of levels) {
   console.log(`[${lvlId}] Running baseline simulation (Deck: ${origDeckSize}, N=5,000)...`);
   const baseMetrics = runSimulationSync(levelJson, 5000, origDeckSize, 100);
 
-  console.log(`[${lvlId}] Running Auto-Calibrator targeting 70% CWR (N=5,000 per candidate)...`);
-  const calibResult = calibrator.calibrate(levelJson, 5000);
+  console.log(`[${lvlId}] Running Auto-Calibrator Mode A: Strict Brief (70% CWR, N=5,000)...`);
+  const briefResult = calibrator.calibrate(levelJson, 5000);
+  const briefMetrics = briefResult.bestMetrics;
+  const briefDeck = briefResult.optimalDeckSize;
 
-  const calibMetrics = calibResult.bestMetrics;
-  const optimalDeck = calibResult.optimalDeckSize;
+  console.log(`[${lvlId}] Running Auto-Calibrator Mode B: Multi-Objective Absolute Peak (N=5,000)...`);
+  const peakResult = calibrator.calibrateAbsolutePeak(levelJson, 5000);
+  const peakMetrics = peakResult.bestMetrics;
+  const peakDeck = peakResult.optimalDeckSize;
 
-  // Save calibrated level JSON
+  // Save calibrated level JSON (Strict Brief)
   const calibratedJson: LevelJSON = JSON.parse(JSON.stringify(levelJson));
-  calibratedJson.settings.cards_in_stack = Array(optimalDeck).fill(-1);
+  calibratedJson.settings.cards_in_stack = Array(briefDeck).fill(-1);
   const outPath = resolve(levelsDir, `${lvlId}_calibrated.json`);
   writeFileSync(outPath, JSON.stringify(calibratedJson, null, 4), 'utf-8');
+
+  // Save peak calibrated level JSON
+  const peakJson: LevelJSON = JSON.parse(JSON.stringify(levelJson));
+  peakJson.settings.cards_in_stack = Array(peakDeck).fill(-1);
+  const peakOutPath = resolve(levelsDir, `${lvlId}_peak_calibrated.json`);
+  writeFileSync(peakOutPath, JSON.stringify(peakJson, null, 4), 'utf-8');
 
   let features = 'Standard';
   if (lvlId === 'level_31') features = 'Zap + 2 Locks + 1 Key';
@@ -64,33 +81,54 @@ for (const lvlId of levels) {
     origDeck: origDeckSize,
     origCwr: baseMetrics.closeWinRate,
     origPass: baseMetrics.passRate,
-    calibDeck: optimalDeck,
-    calibCwr: calibMetrics.closeWinRate,
-    calibPass: calibMetrics.passRate,
-    medianRem: calibMetrics.medianRemainder,
-    bombLossRate: calibMetrics.bombLossRate,
+    origNearMiss: baseMetrics.nearMissRate,
+    briefDeck,
+    briefCwr: briefMetrics.closeWinRate,
+    briefPass: briefMetrics.passRate,
+    briefAbsClose: briefMetrics.absCloseWinRate,
+    briefNearMiss: briefMetrics.nearMissRate,
+    peakDeck,
+    peakCwr: peakMetrics.closeWinRate,
+    peakPass: peakMetrics.passRate,
+    peakAbsClose: peakMetrics.absCloseWinRate,
+    peakNearMiss: peakMetrics.nearMissRate,
+    peakTotalDrama: peakMetrics.dramaticRate,
   });
 
-  console.log(`  -> Baseline: Deck ${origDeckSize} | CWR: ${baseMetrics.closeWinRate.toFixed(1)}% | Pass: ${baseMetrics.passRate.toFixed(1)}%`);
-  console.log(`  -> Calibrated: Deck ${optimalDeck} | CWR: ${calibMetrics.closeWinRate.toFixed(1)}% | Pass: ${calibMetrics.passRate.toFixed(1)}% | Median: ${calibMetrics.medianRemainder}`);
-  console.log(`  -> Saved ${lvlId}_calibrated.json\n`);
+  console.log(`  -> Mode A (Strict 70% CWR): Deck ${briefDeck} | CWR: ${briefMetrics.closeWinRate.toFixed(1)}% | Pass: ${briefMetrics.passRate.toFixed(1)}% | Abs Close: ${briefMetrics.absCloseWinRate.toFixed(1)}%`);
+  console.log(`  -> Mode B (Absolute Peak):  Deck ${peakDeck} | CWR: ${peakMetrics.closeWinRate.toFixed(1)}% | Pass: ${peakMetrics.passRate.toFixed(1)}% | Abs Close: ${peakMetrics.absCloseWinRate.toFixed(1)}% | NearMiss: ${peakMetrics.nearMissRate.toFixed(1)}%`);
+  console.log(`  -> Saved ${lvlId}_calibrated.json & ${lvlId}_peak_calibrated.json\n`);
 }
 
-console.log('========================================================================================');
-console.log('FINAL LEVEL CALIBRATION SUMMARY TABLE');
-console.log('========================================================================================');
+console.log('========================================================================================================================');
+console.log('MODE A: STRICT BRIEF TARGET (70% CLOSE WIN RATE)');
+console.log('========================================================================================================================');
 console.table(
   summaryTable.map((r) => ({
-    'Level ID': r.id,
+    'Level': r.id,
     'Mechanics': r.features,
-    'Orig Deck': r.origDeck,
-    'Orig CWR': `${r.origCwr.toFixed(1)}%`,
-    'Orig Pass': `${r.origPass.toFixed(1)}%`,
-    'Calib Deck': r.calibDeck,
-    'Calib CWR (Target: 70%)': `${r.calibCwr.toFixed(1)}%`,
-    'Calib Pass Rate': `${r.calibPass.toFixed(1)}%`,
-    'Median Rem': `${r.medianRem} cards`,
-    'Bomb Loss %': `${r.bombLossRate.toFixed(1)}%`,
+    'Brief Deck': r.briefDeck,
+    'CWR': `${r.briefCwr.toFixed(1)}%`,
+    'Pass Rate': `${r.briefPass.toFixed(1)}%`,
+    'Abs Close Wins (per 1k)': `${Math.round(r.briefAbsClose * 10)} players`,
+    'Near Misses (per 1k)': `${Math.round(r.briefNearMiss * 10)} players`,
   }))
 );
-console.log('========================================================================================');
+
+console.log('\n========================================================================================================================');
+console.log('MODE B: MULTI-OBJECTIVE ABSOLUTE PEAK (BALANCED RETENTION + NEAR MISS EXPERIENCE)');
+console.log('========================================================================================================================');
+console.table(
+  summaryTable.map((r) => ({
+    'Level': r.id,
+    'Mechanics': r.features,
+    'Peak Deck': r.peakDeck,
+    'Pass Rate': `${r.peakPass.toFixed(1)}%`,
+    'CWR': `${r.peakCwr.toFixed(1)}%`,
+    'Abs Close Wins (per 1k)': `${Math.round(r.peakAbsClose * 10)} players`,
+    'Near Misses (per 1k)': `${Math.round(r.peakNearMiss * 10)} players`,
+    'Total High Excitement': `${Math.round(r.peakTotalDrama * 10)} / 1,000 (${r.peakTotalDrama.toFixed(1)}%)`,
+  }))
+);
+console.log('========================================================================================================================');
+

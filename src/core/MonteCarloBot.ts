@@ -1,4 +1,4 @@
-import { CardState, GameStatus, LossReason } from './types.ts';
+import { BotConfig, CardState, DEFAULT_BOT_CONFIG, GameStatus, LossReason } from './types.ts';
 import { TripeaksEngine } from './TripeaksEngine.ts';
 
 export interface GamePlayResult {
@@ -7,16 +7,28 @@ export interface GamePlayResult {
   movesCount: number;
   maxStreak: number;
   remainderCards: number;
+  remainingBoardCards: number;
 }
 
 export class MonteCarloBot {
-  private wUncover: number = 3.0;
-  private wDepth: number = 2.0;
-  private wChain: number = 1.5;
+  private config: BotConfig;
 
-  public playGame(engine: TripeaksEngine, maxSteps: number = 250): GamePlayResult {
+  constructor(config?: Partial<BotConfig>) {
+    this.config = {
+      ...DEFAULT_BOT_CONFIG,
+      ...config,
+    };
+  }
+
+  public playGame(
+    engine: TripeaksEngine,
+    maxStepsOverride?: number,
+    mistakeProbabilityOverride?: number
+  ): GamePlayResult {
     let movesCount = 0;
     let maxStreak = 0;
+    const maxSteps = maxStepsOverride ?? this.config.maxSteps ?? 250;
+    const mistakeProb = mistakeProbabilityOverride ?? this.config.mistakeProbability ?? 0.0;
 
     while (engine.status === 'playing' && movesCount < maxSteps) {
       movesCount++;
@@ -33,10 +45,17 @@ export class MonteCarloBot {
         continue;
       }
 
-      // Check urgent bomb modifier (timer <= 2)
+      // Epsilon-greedy sub-optimal move simulation for casual/novice personas
+      if (mistakeProb > 0 && Math.random() < mistakeProb) {
+        const randomMove = playableMoves[Math.floor(Math.random() * playableMoves.length)];
+        engine.playCard(randomMove.id);
+        continue;
+      }
+
+      // Check urgent bomb modifier (timer <= bombUrgencyThreshold)
       let urgentBombMove: CardState | null = null;
       for (const card of engine.boardCards.values()) {
-        if (card.bombTimer !== undefined && card.bombTimer <= 2) {
+        if (card.bombTimer !== undefined && card.bombTimer <= this.config.bombUrgencyThreshold) {
           // If the bomb card itself can be played, play it!
           if (playableMoves.some((m) => m.id === card.id)) {
             urgentBombMove = card;
@@ -75,7 +94,7 @@ export class MonteCarloBot {
         const rowCardsCount = Array.from(engine.boardCards.values()).filter(
           (c) => Math.abs(c.y - zapMove.y) <= 30
         ).length;
-        if (rowCardsCount >= 2) {
+        if (rowCardsCount >= this.config.zapMinRowCards) {
           engine.playCard(zapMove.id);
           continue;
         }
@@ -92,7 +111,13 @@ export class MonteCarloBot {
         // Lookahead chain heuristic: how many other visible board cards match m's rank +/- 1
         let chainPotential = 0;
         for (const other of engine.boardCards.values()) {
-          if (other.id !== m.id && other.faceUp && !other.isLocked) {
+          if (
+            other.id !== m.id &&
+            other.faceUp &&
+            !other.isLocked &&
+            other.type !== 'key' &&
+            other.type !== 'zap'
+          ) {
             const d = Math.abs(other.rank - m.rank);
             if (d === 1 || (other.rank === 0 && m.rank === 12) || (other.rank === 12 && m.rank === 0)) {
               chainPotential += 1;
@@ -101,9 +126,9 @@ export class MonteCarloBot {
         }
 
         const score =
-          this.wUncover * coveredCount +
-          this.wDepth * depth +
-          this.wChain * chainPotential;
+          this.config.wUncover * coveredCount +
+          this.config.wDepth * depth +
+          this.config.wChain * chainPotential;
 
         if (score > bestScore) {
           bestScore = score;
@@ -122,6 +147,7 @@ export class MonteCarloBot {
       movesCount,
       maxStreak,
       remainderCards: engine.drawPile.length,
+      remainingBoardCards: engine.boardCards.size,
     };
   }
 }

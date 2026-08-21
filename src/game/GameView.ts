@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Sprite, Text, TextStyle } from 'pixi.js';
+import { Application, Container, Graphics, Sprite, Text, TextStyle, Texture } from 'pixi.js';
 import { CardState, LevelJSON } from '../core/types.ts';
 import { loadLevel } from '../core/CardGraph.ts';
 import { TripeaksEngine } from '../core/TripeaksEngine.ts';
@@ -63,6 +63,8 @@ export class GameView {
     this.container.appendChild(this.tooltipElement);
   }
 
+  public onRestartRequested?: () => void;
+
   private createOverlay(): void {
     this.overlayElement = document.createElement('div');
     this.overlayElement.className = 'game-overlay';
@@ -75,8 +77,20 @@ export class GameView {
 
     const restartBtn = this.overlayElement.querySelector('#overlay-restart-btn');
     restartBtn?.addEventListener('click', () => {
-      this.restart();
+      if (this.onRestartRequested) {
+        this.onRestartRequested();
+      } else {
+        this.restart();
+      }
     });
+  }
+
+  public getCurrentSeed(): number {
+    return this.currentSeed;
+  }
+
+  public getCustomDeckSize(): number | undefined {
+    return this.customDeckSize;
   }
 
   public loadLevel(levelJson: LevelJSON, seed: number = 42, customDeckSize?: number): void {
@@ -91,10 +105,11 @@ export class GameView {
     this.buildScene();
   }
 
-  public restart(): void {
+  public restart(keepSeed: boolean = false): void {
     this.hideCardTooltip();
     if (!this.currentLevelJson) return;
-    this.loadLevel(this.currentLevelJson, this.currentSeed, this.customDeckSize);
+    const seed = keepSeed ? this.currentSeed : Math.floor(Math.random() * 1000000) + 1;
+    this.loadLevel(this.currentLevelJson, seed, this.customDeckSize);
   }
 
   public undo(): void {
@@ -111,6 +126,16 @@ export class GameView {
     const cards = Array.from(this.engine.boardCards.values());
     this.layout.updateDimensions(this.app.screen.width, this.app.screen.height, cards);
     this.updateCardPositions();
+  }
+
+  private getCardFaceTexture(card: CardState): Texture {
+    if (card.type === 'key') {
+      return this.factory.getKeyCardTexture();
+    }
+    if (card.type === 'zap') {
+      return this.factory.getZapCardTexture();
+    }
+    return this.factory.getCardTexture(card.rank, card.suit);
   }
 
   private buildScene(): void {
@@ -134,7 +159,7 @@ export class GameView {
       cardWrap.scale.set(this.layout.scale);
 
       const mainTexture = card.faceUp
-        ? this.factory.getCardTexture(card.rank, card.suit)
+        ? this.getCardFaceTexture(card)
         : this.factory.getCardBackTexture();
 
       const mainSprite = new Sprite(mainTexture);
@@ -176,27 +201,12 @@ export class GameView {
   private updateCardOverlays(card: CardState, overlays: Container): void {
     overlays.removeChildren();
 
-    // Wooden Lock Overlay
-    if (card.isLocked) {
-      const lockSprite = new Sprite(this.factory.getLockOverlayTexture());
-      lockSprite.anchor.set(0.5);
-      overlays.addChild(lockSprite);
-    }
-
-    // Key Badge
-    if (card.type === 'key') {
-      const keySprite = new Sprite(this.factory.getKeyTexture());
-      keySprite.anchor.set(0.5);
-      keySprite.position.set(0, 0);
-      overlays.addChild(keySprite);
-    }
-
-    // Zap Badge
-    if (card.type === 'zap') {
-      const zapSprite = new Sprite(this.factory.getZapTexture());
-      zapSprite.anchor.set(0.5);
-      zapSprite.position.set(0, 0);
-      overlays.addChild(zapSprite);
+    // Lock Overlay (Chains & Padlock over the face card)
+    if (card.isLocked && card.faceUp) {
+      const lockOverlay = new Sprite(this.factory.getLockOverlayTexture());
+      lockOverlay.anchor.set(0.5);
+      lockOverlay.label = 'lock_overlay';
+      overlays.addChild(lockOverlay);
     }
 
     // Bomb Countdown Badge
@@ -220,7 +230,7 @@ export class GameView {
     for (let i = 0; i < visualCards; i++) {
       const back = new Sprite(this.factory.getCardBackTexture());
       back.anchor.set(0.5);
-      back.position.set(-i * 4, 0);
+      back.position.set(-i * 4 * this.layout.scale, 0);
       back.scale.set(this.layout.scale);
       this.deckContainer.addChild(back);
     }
@@ -237,17 +247,19 @@ export class GameView {
     this.deckContainer.addChild(topCard);
 
     // Large white badge in bottom-right corner showing remaining count
+    const badgeRadius = Math.max(13, 16 * this.layout.scale);
+    const badgeX = (this.factory.width * 0.32) * this.layout.scale;
+    const badgeY = (this.factory.height * 0.32) * this.layout.scale;
+
     const badgeBg = new Graphics();
-    badgeBg.circle(
-      (this.factory.width * 0.32) * this.layout.scale,
-      (this.factory.height * 0.32) * this.layout.scale,
-      16 * this.layout.scale
-    ).fill({ color: 0xffffff }).stroke({ color: 0x1e293b, width: 2 });
+    badgeBg.circle(badgeX, badgeY, badgeRadius)
+      .fill({ color: 0xffffff })
+      .stroke({ color: 0x1e293b, width: 2 });
     this.deckContainer.addChild(badgeBg);
 
     const style = new TextStyle({
       fontFamily: 'Segoe UI, Roboto, sans-serif',
-      fontSize: 16 * this.layout.scale,
+      fontSize: Math.max(12, 15 * this.layout.scale),
       fontWeight: 'bold',
       fill: '#0f172a',
     });
@@ -257,10 +269,7 @@ export class GameView {
       style,
     });
     this.deckBadgeText.anchor.set(0.5);
-    this.deckBadgeText.position.set(
-      (this.factory.width * 0.32) * this.layout.scale,
-      (this.factory.height * 0.32) * this.layout.scale
-    );
+    this.deckBadgeText.position.set(badgeX, badgeY);
     this.deckContainer.addChild(this.deckBadgeText);
   }
 
@@ -301,7 +310,7 @@ export class GameView {
     if (card.isLocked) {
       const item = this.cardSpriteMap.get(cardId);
       if (item) {
-        AnimationFX.animateLockShake(item.container);
+        AnimationFX.animateLockShake(item.container, this.layout.scale);
       }
       return;
     }
@@ -312,51 +321,120 @@ export class GameView {
 
     this.isAnimating = true;
     const cardItem = this.cardSpriteMap.get(cardId);
+    const cardType = card.type;
     const result = this.engine.playCard(cardId);
 
     if (result.success && cardItem) {
-      // 1. Animate card flight to Waste Pile
-      AnimationFX.animateCardMatch(cardItem.container, this.layout.wastePos, () => {
+      if (cardType === 'key') {
+        // 1. Key Card Collected: floats up & dissolves (NOT added to waste)
+        AnimationFX.animateKeyCollect(cardItem.container, this.layout.scale, () => {
+          this.tableContainer.removeChild(cardItem.container);
+          cardItem.container.destroy();
+          this.cardSpriteMap.delete(cardId);
+        });
+
+        // 2. All Lock Cards on board unlock (lock overlay pops & dissolves, card stays on board!)
+        for (const lockId of result.unlockedCardIds) {
+          const lockItem = this.cardSpriteMap.get(lockId);
+          if (lockItem) {
+            const overlay = lockItem.overlays.getChildByLabel('lock_overlay');
+            if (overlay) {
+              AnimationFX.animateLockUnlock(overlay, this.layout.scale, () => {
+                lockItem.overlays.removeChild(overlay);
+                overlay.destroy();
+              });
+            }
+          }
+        }
+
+        // 3. Uncover newly revealed cards & update bomb overlays
+        setTimeout(() => {
+          for (const uncId of result.uncoveredCardIds) {
+            const uncItem = this.cardSpriteMap.get(uncId);
+            const uncCard = this.engine.boardCards.get(uncId);
+            if (uncItem && uncCard) {
+              const faceTex = this.getCardFaceTexture(uncCard);
+              AnimationFX.animateCardFlip(uncItem.container, faceTex, uncItem.mainSprite, this.layout.scale);
+              this.updateCardOverlays(uncCard, uncItem.overlays);
+            }
+          }
+
+          // 4. Update bomb overlays
+          for (const [id, item] of this.cardSpriteMap.entries()) {
+            const c = this.engine.boardCards.get(id);
+            if (c) {
+              this.updateCardOverlays(c, item.overlays);
+            }
+          }
+
+          this.isAnimating = false;
+          this.checkGameEnd();
+        }, 150);
+      } else if (cardType === 'zap') {
+        // Zap effect across row
+        AnimationFX.animateZapRow(this.fxContainer, cardItem.container.y, this.app.screen.width);
         this.tableContainer.removeChild(cardItem.container);
         cardItem.container.destroy();
         this.cardSpriteMap.delete(cardId);
 
-        // Update waste card face
-        const active = this.engine.getActiveCard();
-        if (active && this.wasteSprite) {
-          this.wasteSprite.texture = this.factory.getCardTexture(active.rank, active.suit);
-        }
-
-        // 2. Animate newly uncovered cards (flip reveal)
-        for (const uncId of result.uncoveredCardIds) {
-          const uncItem = this.cardSpriteMap.get(uncId);
-          const uncCard = this.engine.boardCards.get(uncId);
-          if (uncItem && uncCard) {
-            const faceTex = this.factory.getCardTexture(uncCard.rank, uncCard.suit);
-            AnimationFX.animateCardFlip(uncItem.container, faceTex, uncItem.mainSprite);
+        for (const clearedId of result.clearedCardIds) {
+          const item = this.cardSpriteMap.get(clearedId);
+          if (item) {
+            AnimationFX.animateLockUnlock(item.container, this.layout.scale, () => {
+              this.tableContainer.removeChild(item.container);
+              item.container.destroy();
+              this.cardSpriteMap.delete(clearedId);
+            });
           }
         }
 
-        // 3. Update unlocked cards
-        for (const unlId of result.unlockedCardIds) {
-          const unlItem = this.cardSpriteMap.get(unlId);
-          const unlCard = this.engine.boardCards.get(unlId);
-          if (unlItem && unlCard) {
-            this.updateCardOverlays(unlCard, unlItem.overlays);
+        setTimeout(() => {
+          for (const uncId of result.uncoveredCardIds) {
+            const uncItem = this.cardSpriteMap.get(uncId);
+            const uncCard = this.engine.boardCards.get(uncId);
+            if (uncItem && uncCard) {
+              const faceTex = this.getCardFaceTexture(uncCard);
+              AnimationFX.animateCardFlip(uncItem.container, faceTex, uncItem.mainSprite, this.layout.scale);
+            }
           }
-        }
+          this.isAnimating = false;
+          this.checkGameEnd();
+        }, 150);
+      } else {
+        // Standard Card matched to waste
+        AnimationFX.animateCardMatch(cardItem.container, this.layout.wastePos, this.layout.scale, () => {
+          this.tableContainer.removeChild(cardItem.container);
+          cardItem.container.destroy();
+          this.cardSpriteMap.delete(cardId);
 
-        // 4. Update remaining bomb timers on board
-        for (const [id, item] of this.cardSpriteMap.entries()) {
-          const c = this.engine.boardCards.get(id);
-          if (c) {
-            this.updateCardOverlays(c, item.overlays);
+          // Update waste card face
+          const active = this.engine.getActiveCard();
+          if (active && this.wasteSprite) {
+            this.wasteSprite.texture = this.factory.getCardTexture(active.rank, active.suit);
           }
-        }
 
-        this.isAnimating = false;
-        this.checkGameEnd();
-      });
+          // Animate newly uncovered cards (flip reveal)
+          for (const uncId of result.uncoveredCardIds) {
+            const uncItem = this.cardSpriteMap.get(uncId);
+            const uncCard = this.engine.boardCards.get(uncId);
+            if (uncItem && uncCard) {
+              const faceTex = this.getCardFaceTexture(uncCard);
+              AnimationFX.animateCardFlip(uncItem.container, faceTex, uncItem.mainSprite, this.layout.scale);
+            }
+          }
+
+          // Update remaining bomb timers on board
+          for (const [id, item] of this.cardSpriteMap.entries()) {
+            const c = this.engine.boardCards.get(id);
+            if (c) {
+              this.updateCardOverlays(c, item.overlays);
+            }
+          }
+
+          this.isAnimating = false;
+          this.checkGameEnd();
+        });
+      }
     } else {
       this.isAnimating = false;
     }
@@ -377,7 +455,7 @@ export class GameView {
       tempCard.scale.set(this.layout.scale);
       this.fxContainer.addChild(tempCard);
 
-      AnimationFX.animateCardDraw(tempCard, this.layout.deckPos, this.layout.wastePos, () => {
+      AnimationFX.animateCardDraw(tempCard, this.layout.deckPos, this.layout.wastePos, this.layout.scale, () => {
         this.fxContainer.removeChild(tempCard);
         tempCard.destroy();
 
@@ -474,7 +552,17 @@ export class GameView {
       </div>
       <div class="card-tooltip-row">
         <span class="card-tooltip-key">Card Value:</span>
-        <span class="card-tooltip-val">${card.faceUp ? `${card.rank} (${card.suit})` : 'Hidden'}</span>
+        <span class="card-tooltip-val">${
+          !card.faceUp
+            ? 'Hidden'
+            : card.type === 'lock'
+            ? '🔒 Lock (Obstacle)'
+            : card.type === 'key'
+            ? '🔑 Key (Unlocks all locks)'
+            : card.type === 'zap'
+            ? '⚡ Zap (Clears row)'
+            : `${card.rank} (${card.suit})`
+        }</span>
       </div>
       <div class="card-tooltip-row">
         <span class="card-tooltip-key">Face State:</span>
@@ -484,11 +572,6 @@ export class GameView {
         <span class="card-tooltip-key">Playable:</span>
         <span class="card-tooltip-val ${card.isPlayable ? 'badge-yes' : 'badge-no'}">${card.isPlayable ? 'Yes' : 'No'}</span>
       </div>
-      ${card.isLocked ? `
-      <div class="card-tooltip-row">
-        <span class="card-tooltip-key">Lock State:</span>
-        <span class="card-tooltip-val badge-no">🔒 Locked</span>
-      </div>` : ''}
       ${bombMod ? `
       <div class="card-tooltip-row">
         <span class="card-tooltip-key">Bomb Timer:</span>

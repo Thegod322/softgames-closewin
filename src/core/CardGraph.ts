@@ -1,9 +1,10 @@
 import { CardState, InitialLevelState, LevelJSON, Rank, RawCardJSON, Suit } from './types.ts';
 
-export const CARD_WIDTH = 80;
-export const CARD_HEIGHT = 112;
-export const OVERLAP_FACTOR_X = 0.65;
-export const OVERLAP_FACTOR_Y = 0.65;
+export const CARD_WIDTH = 100;
+export const CARD_HEIGHT = 150;
+export const OVERLAP_FACTOR_X = 0.98;
+export const OVERLAP_FACTOR_Y = 0.98;
+
 
 const SUITS: Suit[] = ['spades', 'hearts', 'diamonds', 'clubs'];
 
@@ -138,16 +139,24 @@ export function loadLevel(
   const boardCards: CardState[] = [];
 
   for (const raw of levelJson.cards) {
-    let val = raw.value;
-    if (val === undefined || raw.random || val === -1) {
-      val = deckPool[poolIdx % deckPool.length];
-      poolIdx++;
+    const isSpecialWithoutValue = raw.type === 'key' || raw.type === 'zap';
+    let val = -1;
+    let rank: Rank = 0 as Rank;
+    let suit: Suit = 'spades';
+
+    if (!isSpecialWithoutValue) {
+      val = raw.value ?? -1;
+      if (val === -1 || raw.random) {
+        val = deckPool[poolIdx % deckPool.length];
+        poolIdx++;
+      }
+      const parsed = cardValueToRankAndSuit(val);
+      rank = parsed.rank;
+      suit = parsed.suit;
     }
 
-    const { rank, suit } = cardValueToRankAndSuit(val);
     const isCovered = graph.isCovered(raw.id);
     const isLocked = raw.type === 'lock';
-
     const bombMod = raw.modifiers?.find((m) => m.type === 'bomb');
 
     boardCards.push({

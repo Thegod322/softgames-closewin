@@ -64,13 +64,22 @@ export class TripeaksEngine {
     if (this.status !== 'playing') return false;
 
     const card = this.boardCards.get(cardId);
-    if (!card || !card.faceUp || card.isLocked) return false;
+    if (!card || !card.faceUp) return false;
     if (this.cardGraph.isCovered(cardId)) return false;
+
+    // Lock cards cannot be played until unlocked by a key
+    if (card.isLocked) return false;
+
+    // Key cards can be collected immediately once uncovered
+    if (card.type === 'key') return true;
+
+    // Zap cards can be collected immediately once uncovered
+    if (card.type === 'zap') return true;
 
     const active = this.getActiveCard();
     if (!active) return false;
 
-    // Ace-King wrap matching
+    // Ace-King wrap matching for standard value cards
     const delta = Math.abs(card.rank - active.rank);
     const isWrap =
       (card.rank === 0 && active.rank === 12) ||
@@ -144,6 +153,19 @@ export class TripeaksEngine {
     return true;
   }
 
+  private tickBombs(): boolean {
+    let bombExploded = false;
+    for (const c of this.boardCards.values()) {
+      if (c.faceUp && c.bombTimer !== undefined && c.bombTimer > 0) {
+        c.bombTimer -= 1;
+        if (c.bombTimer === 0) {
+          bombExploded = true;
+        }
+      }
+    }
+    return bombExploded;
+  }
+
   public playCard(cardId: string): MoveResult {
     if (this.status !== 'playing') {
       return {
@@ -172,38 +194,39 @@ export class TripeaksEngine {
     this.saveSnapshot();
 
     const playedCard = this.boardCards.get(cardId)!;
-    this.wastePile.push(playedCard.value);
-    this.boardCards.delete(cardId);
-    this.streak += 1;
-
-    // Remove from graph and uncover dependents
-    const uncoveredCardIds = this.cardGraph.removeCard(cardId);
-    for (const uncId of uncoveredCardIds) {
-      const c = this.boardCards.get(uncId);
-      if (c) {
-        c.faceUp = true;
-        c.isPlayable = !c.isLocked;
-      }
-    }
-
     const unlockedCardIds: string[] = [];
     const clearedCardIds: string[] = [];
+    const uncoveredCardIds: string[] = [];
 
-    // Check Key modifier effect
     if (playedCard.type === 'key') {
-      for (const c of this.boardCards.values()) {
-        if (c.isLocked) {
-          c.isLocked = false;
-          unlockedCardIds.push(c.id);
-          if (!this.cardGraph.isCovered(c.id)) {
-            c.isPlayable = true;
-          }
+      // Key collected: does NOT go into waste pile, simply collected & disappears
+      this.boardCards.delete(cardId);
+      clearedCardIds.push(cardId);
+
+      const uncFromKey = this.cardGraph.removeCard(cardId);
+      for (const uId of uncFromKey) {
+        if (!uncoveredCardIds.includes(uId)) uncoveredCardIds.push(uId);
+      }
+
+      // All Lock cards on the board are unlocked and remain as playable value cards!
+      for (const lock of this.boardCards.values()) {
+        if (lock.isLocked) {
+          lock.isLocked = false;
+          lock.type = 'value';
+          unlockedCardIds.push(lock.id);
+          lock.isPlayable = lock.faceUp && !this.cardGraph.isCovered(lock.id);
         }
       }
-    }
+    } else if (playedCard.type === 'zap') {
+      // Zap activated: clears entire horizontal row
+      this.boardCards.delete(cardId);
+      clearedCardIds.push(cardId);
 
-    // Check Zap modifier effect (clears entire horizontal row: |y - played.y| <= 30)
-    if (playedCard.type === 'zap') {
+      const uncFromZap = this.cardGraph.removeCard(cardId);
+      for (const uId of uncFromZap) {
+        if (!uncoveredCardIds.includes(uId)) uncoveredCardIds.push(uId);
+      }
+
       const targetIds: string[] = [];
       for (const [id, c] of this.boardCards.entries()) {
         if (Math.abs(c.y - playedCard.y) <= 30) {
@@ -217,30 +240,34 @@ export class TripeaksEngine {
           clearedCardIds.push(targetId);
           const newUncovered = this.cardGraph.removeCard(targetId);
           for (const uId of newUncovered) {
-            const uc = this.boardCards.get(uId);
-            if (uc) {
-              uc.faceUp = true;
-              uc.isPlayable = !uc.isLocked;
-              if (!uncoveredCardIds.includes(uId)) {
-                uncoveredCardIds.push(uId);
-              }
-            }
+            if (!uncoveredCardIds.includes(uId)) uncoveredCardIds.push(uId);
           }
         }
+      }
+    } else {
+      // Standard value card match: goes to waste pile
+      this.wastePile.push(playedCard.value);
+      this.boardCards.delete(cardId);
+      clearedCardIds.push(cardId);
+      this.streak += 1;
+
+      const uncFromCard = this.cardGraph.removeCard(cardId);
+      for (const uId of uncFromCard) {
+        if (!uncoveredCardIds.includes(uId)) uncoveredCardIds.push(uId);
+      }
+    }
+
+    // Mark newly uncovered cards faceUp & playable
+    for (const uncId of uncoveredCardIds) {
+      const c = this.boardCards.get(uncId);
+      if (c) {
+        c.faceUp = true;
+        c.isPlayable = !c.isLocked;
       }
     }
 
     // Tick active bomb modifiers on board
-    let bombExploded = false;
-    for (const c of this.boardCards.values()) {
-      if (c.bombTimer !== undefined && c.bombTimer > 0) {
-        c.bombTimer -= 1;
-        if (c.bombTimer === 0) {
-          bombExploded = true;
-        }
-      }
-    }
-
+    const bombExploded = this.tickBombs();
     if (bombExploded) {
       this.status = 'lost';
       this.lossReason = 'bomb_exploded';
@@ -320,17 +347,8 @@ export class TripeaksEngine {
     this.wastePile.push(drawnCard);
     this.streak = 0;
 
-    // Tick active bomb modifiers on board
-    let bombExploded = false;
-    for (const c of this.boardCards.values()) {
-      if (c.bombTimer !== undefined && c.bombTimer > 0) {
-        c.bombTimer -= 1;
-        if (c.bombTimer === 0) {
-          bombExploded = true;
-        }
-      }
-    }
-
+    // A move is defined as playing a card OR drawing a card -> tick bombs
+    const bombExploded = this.tickBombs();
     if (bombExploded) {
       this.status = 'lost';
       this.lossReason = 'bomb_exploded';
@@ -362,3 +380,4 @@ export class TripeaksEngine {
     };
   }
 }
+
