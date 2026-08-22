@@ -343,7 +343,7 @@ export class ChartsView {
 
       <!-- Explainer Note -->
       <div class="dual-donuts-explainer">
-        <span>💡 <strong>All Games:</strong> воронка всех попыток. <strong>Win Quality:</strong> структура только побед (CWR).</span>
+        <span>💡 <strong>All Games:</strong> full cohort conversion funnel. <strong>Win Quality:</strong> close win rate (CWR) breakdown of victories only.</span>
       </div>
     `;
   }

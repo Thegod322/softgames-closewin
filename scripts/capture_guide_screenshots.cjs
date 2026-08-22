@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer-core');
 const path = require('path');
 const fs = require('fs');
+const http = require('http');
 
 const CHROME_PATHS = [
   'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
@@ -15,13 +16,46 @@ function getExecutablePath() {
   throw new Error('No Chrome or Edge browser executable found');
 }
 
+// Simple static server for dist/
+function startStaticServer(port = 8089) {
+  const distDir = path.join(__dirname, '..', 'dist');
+  const mimeTypes = {
+    '.html': 'text/html',
+    '.js': 'text/javascript',
+    '.css': 'text/css',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.svg': 'image/svg+xml'
+  };
+
+  const server = http.createServer((req, res) => {
+    let reqPath = req.url.split('?')[0];
+    if (reqPath === '/' || reqPath === '') reqPath = '/index.html';
+    const filePath = path.join(distDir, reqPath);
+
+    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
+      const ext = path.extname(filePath);
+      res.writeHead(200, { 'Content-Type': mimeTypes[ext] || 'application/octet-stream' });
+      fs.createReadStream(filePath).pipe(res);
+    } else {
+      res.writeHead(404);
+      res.end('Not found');
+    }
+  });
+
+  return new Promise((resolve) => {
+    server.listen(port, () => resolve(server));
+  });
+}
+
 async function capture() {
   const outputDir = path.join(__dirname, '..', 'docs', 'images');
   fs.mkdirSync(outputDir, { recursive: true });
 
-  const executablePath = getExecutablePath();
-  console.log(`Using browser: ${executablePath}`);
+  const server = await startStaticServer(8089);
+  console.log('Static server running on http://localhost:8089');
 
+  const executablePath = getExecutablePath();
   const browser = await puppeteer.launch({
     executablePath,
     headless: 'new',
@@ -34,7 +68,7 @@ async function capture() {
   });
 
   const page = await browser.newPage();
-  const url = 'https://thegod322.github.io/softgames-closewin/';
+  const url = 'http://localhost:8089/';
   console.log(`Navigating to ${url}...`);
   await page.goto(url, { waitUntil: 'networkidle0', timeout: 30000 });
   await new Promise(r => setTimeout(r, 3000));
@@ -61,31 +95,23 @@ async function capture() {
     await new Promise(r => setTimeout(r, 5000)); // Wait for Monte Carlo simulation to finish
   }
 
-  // 3. Header showing active Tuner tab
-  console.log('3. Capturing Header with Tuner Active (01_tuner_tab_active.png)...');
-  if (header) {
-    await header.screenshot({ path: path.join(outputDir, '01_tuner_tab_active.png') });
-  }
-
-  // 4. Full Tuner Dashboard
-  console.log('4. Capturing Full Tuner Overview (03_difficulty_tuner_overview.png)...');
+  // 3. Full Tuner Dashboard
+  console.log('3. Capturing Full Tuner Overview (03_difficulty_tuner_overview.png)...');
   const tunerCard = await page.$('#target-card-brief');
   if (tunerCard) {
     await tunerCard.screenshot({ path: path.join(outputDir, '03_difficulty_tuner_overview.png') });
   }
 
-  // 5. Hero KPI Ribbon
-  console.log('5. Capturing Hero KPIs Ribbon (04_hero_kpis_ribbon.png)...');
+  // 4. Hero KPI Ribbon
+  console.log('4. Capturing Hero KPIs Ribbon (04_hero_kpis_ribbon.png)...');
   const heroKpis = await page.$('.target-hero-kpi-grid');
   if (heroKpis) {
     await heroKpis.screenshot({ path: path.join(outputDir, '04_hero_kpis_ribbon.png') });
   }
 
-  // 6. Individual 3 Deep Dive Panels inside Target Card
-  console.log('6. Capturing Individual 3 Panels...');
+  // 5. Individual 3 Deep Dive Panels inside Target Card
+  console.log('5. Capturing Individual 3 Panels...');
   const panels = await page.$$('#target-card-brief .target-panel');
-  console.log(`Found ${panels.length} panels in target card.`);
-
   if (panels.length >= 1) {
     console.log(' - Capturing Dual Donut Funnels (05_dual_donut_funnels.png)...');
     await panels[0].screenshot({ path: path.join(outputDir, '05_dual_donut_funnels.png') });
@@ -99,12 +125,12 @@ async function capture() {
     await panels[2].screenshot({ path: path.join(outputDir, '07_multi_persona_benchmark.png') });
   }
 
-  // 7. Manual Simulation Drawer (Must click expand button!)
-  console.log('7. Expanding and Capturing Manual Simulation Drawer...');
+  // 6. Manual Simulation Drawer (Must click expand button!)
+  console.log('6. Expanding and Capturing Manual Simulation Drawer...');
   const drawerBtn = await page.$('#btn-toggle-manual-drawer');
   if (drawerBtn) {
     await drawerBtn.click();
-    await new Promise(r => setTimeout(r, 1000)); // Wait for animation
+    await new Promise(r => setTimeout(r, 1000));
   }
 
   const manualCard = await page.$('#manual-results-card, #manual-testing-content');
@@ -113,8 +139,9 @@ async function capture() {
     await manualCard.screenshot({ path: path.join(outputDir, '08_manual_simulation_drawer.png') });
   }
 
-  console.log('✅ All screenshots captured and verified!');
+  console.log('✅ All screenshots recaptured with 100% English UI!');
   await browser.close();
+  server.close();
 }
 
 capture().catch(err => {
