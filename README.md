@@ -5,7 +5,7 @@
 ### 🚀 Quick Access Links:
 - 🎮 **Live Web Application (Game Prototype & Tuner):** [https://thegod322.github.io/softgames-closewin/](https://thegod322.github.io/softgames-closewin/)
 - ⏱️ **Interactive AI Development Timeline & Prompts:** [https://thegod322.github.io/guapiko-timeline-viewer/](https://thegod322.github.io/guapiko-timeline-viewer/)
-- 📄 **1-Page Candidate Brief (Executive Summary & AI Workflow):** [`CANDIDATE_BRIEF.md`](./CANDIDATE_BRIEF.md)
+- 📄 **1-Page Candidate Brief (Zero-Slop v2):** [`CANDIDATE_BRIEF_V2.md`](./CANDIDATE_BRIEF_V2.md) *(also available: [`CANDIDATE_BRIEF.md`](./CANDIDATE_BRIEF.md))*
 - 📊 **Detailed Candidate Delivery & Balancing Report:** [`CANDIDATE_REPORT.md`](./CANDIDATE_REPORT.md)
 - 📜 **Raw AI Conversation Transcripts Archive:** [https://github.com/Thegod322/guapiko-timeline-viewer/tree/main/transcripts](https://github.com/Thegod322/guapiko-timeline-viewer/tree/main/transcripts)
 
