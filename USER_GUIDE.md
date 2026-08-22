@@ -1,170 +1,113 @@
-# Softgames — Operation Close Win: Complete Visual User Guide
+# Softgames — Operation Close Win: User Guide & Workbench Manual
 
-> **Interactive Solitaire Tripeaks Prototype & Monte Carlo Difficulty Calibration Suite**  
-> *A practical guide explaining every screen, control, metric, and simulation workflow in the web application.*
-
-- **Live Application:** [thegod322.github.io/softgames-closewin](https://thegod322.github.io/softgames-closewin/)
-- **Chrono-Timeline:** [thegod322.github.io/guapiko-timeline-viewer](https://thegod322.github.io/guapiko-timeline-viewer/)
-- **Source Code:** [github.com/Thegod322/softgames-closewin](https://github.com/Thegod322/softgames-closewin)
+**Live Application:** [https://thegod322.github.io/softgames-closewin/](https://thegod322.github.io/softgames-closewin/)  
+**Interactive Chrono-Timeline:** [https://thegod322.github.io/guapiko-timeline-viewer/](https://thegod322.github.io/guapiko-timeline-viewer/)  
+**Source Code Repository:** [https://github.com/Thegod322/softgames-closewin](https://github.com/Thegod322/softgames-closewin)
 
 ---
 
-## 📑 Table of Contents
-1. [Application Structure & Navigation](#1-application-structure--navigation)
-2. [Module 1: Playable Tripeaks Prototype](#2-module-1-playable-tripeaks-prototype)
-   - [Toolbar Controls & Hand Size](#21-toolbar-controls--hand-size)
-   - [Board Layout & Card Hierarchy](#22-board-layout--card-hierarchy)
-   - [Interactive Modifiers (Bombs, Locks, Keys, Zap)](#23-interactive-modifiers-bombs-locks-keys-zap)
-   - [Golden Seeds vs. Random Deals](#24-golden-seeds-vs-random-deals)
-3. [Module 2: Difficulty Tuner & Monte Carlo Suite](#3-module-2-difficulty-tuner--monte-carlo-suite)
-   - [Hero KPIs Ribbon](#31-hero-kpis-ribbon)
-   - [Dual Donut Visual Funnels](#32-dual-donut-visual-funnels)
-   - [Multi-Persona Skill Expression Benchmark](#33-multi-persona-skill-expression-benchmark)
-   - [Manual Simulation & Verification Workbench](#34-manual-simulation--verification-workbench)
-4. [Custom Level Upload & JSON Export](#4-custom-level-upload--json-export)
+## ⚡ Quick Start: How to Open the Tuner
+
+When you open the web application, it starts in the **🎮 Playable Prototype** view. 
+
+To access the balancing suite, click the **📊 Difficulty Tuner & Monte Carlo** tab in the top navigation bar:
+
+```
++-------------------------------------------------------------------------------------------------------+
+| SOFTGAMES  Operation Close Win   [ 🎮 Playable Prototype ] [ 📊 Difficulty Tuner & Monte Carlo ] <-- CLICK HERE
++-------------------------------------------------------------------------------------------------------+
+```
+
+![Top Navigation & Prototype Overview](./docs/images/01_game_prototype_overview.png)
 
 ---
 
-## 1. Application Structure & Navigation
+## 1. Module 2: Difficulty Tuner & Monte Carlo Suite (Primary Tool)
 
-The application is divided into two synchronized modules accessible via the top navigation bar:
+The Difficulty Tuner runs large-scale Monte Carlo simulations ($N=2,000$ runs per level in background Web Workers) to auto-calibrate deck sizes for a **70% Close Win Rate (CWR)**, benchmark player personas, and isolate winnable **Golden Seeds**.
 
-![Application Overview](./docs/images/01_game_prototype_overview.png)
+![Difficulty Tuner Overview](./docs/images/04_difficulty_tuner_full.png)
 
-- **🎮 Playable Prototype:** Interactive WebGL canvas (PixiJS v8) to play levels manually, test tactile game feel, verify modifier interactions, and validate close-win deals.
-- **📊 Difficulty Tuner & Monte Carlo:** Headless high-throughput simulation workbench running $N=2,000$ Monte Carlo runs in background Web Workers to auto-tune deck economy and benchmark player personas.
+### 1.1 Top Controls Bar
+
+At the top of the Tuner card:
+- **Level Select Dropdown:** Switch between presets (`level_25`, `level_31`, `level_43`, `level_54`) or uploaded custom levels.
+- **📂 Upload JSON:** Load custom level JSON files. They are automatically parsed and saved to browser `localStorage`.
+- **🚀 Run Analysis:** Runs the full $N=2,000$ simulation batch to recalculate all stats.
+- **🎮 Apply & Play:** Applies the calibrated deck size and switches directly to the playable game.
+- **💾 Download JSON:** Exports the calibrated level file with the new deck size and mined golden seeds.
 
 ---
 
-## 2. Module 1: Playable Tripeaks Prototype
+### 1.2 Hero KPI Ribbon (Executive Metrics)
 
-### 2.1 Toolbar Controls & Hand Size
+![Hero KPIs](./docs/images/05_hero_kpis_ribbon.png)
 
-![Game Toolbar](./docs/images/02_game_toolbar.png)
-
-| Control | Description |
+| Metric | Meaning & Target |
 | :--- | :--- |
-| **Select Level Dropdown** | Switch between pre-configured preset levels (`level_25`, `level_31`, `level_43`, `level_54`) or any uploaded custom levels. |
-| **📂 Upload JSON Button** | Load custom Softgames level JSON files directly from your computer. |
-| **Hand Size (Deck Cards)** | Dynamically change the number of cards in the draw pile before playing. Defaults to the calibrated deck size. |
-| **Seed Badge (`#Seed`)** | Displays the current deal seed number for deterministic reproducibility. |
-| **↺ Restart Button** | Resets and redeals the current level. |
-| **☑️ Keep Seed Checkbox** | When checked, restarting redeals the exact same card layout and draw pile order (ideal for testing alternative move sequences). |
-| **🌟 Golden Seed Checkbox** | Toggles between **Random Deals** (PRNG shuffle) and **Curated Golden Seeds** (guaranteed winnable close-win deals with 0–2 cards remaining). |
-| **↶ Undo Button** | Step backwards by one move to explore branching card plays. |
+| **🃏 Hand Size (Draw Pile)** | Calibrated number of cards in the stock to achieve the target CWR. |
+| **🏆 Overall Pass Rate** | Left: baseline random PRNG win rate (e.g. `2.6%`). Right: **🌟 Golden Seeds Pass Rate** (e.g. `100%`). |
+| **🎯 Close Win Rate (CWR)** | Percentage of wins where the player finished with $\le 2$ cards left in the draw pile (Target: **70% ± 2%**). |
+| **🔥 High-Excitement Cohort** | Players per 1,000 experiencing high drama: **Close Wins** + **Near Misses** ($\le 2$ cards left on board upon loss). |
 
 ---
 
-### 2.2 Board Layout & Card Hierarchy
+### 1.3 Deep Dive Panels
 
-![Tripeaks Board Canvas](./docs/images/03_tripeaks_board_canvas.png)
+![Panels](./docs/images/06_dual_donut_charts.png)
 
-1. **Tableau Cards (Pyramid / Peaks):**
-   - **Face-Up Cards:** Available for immediate play if their rank is $\pm 1$ from the active waste card (with $K \leftrightarrow A$ wrap-around).
-   - **Face-Down Cards:** Become uncovered and flip face-up once all overlapping parent cards above them are removed.
-2. **Draw Pile (Stock):**
-   - Located at the bottom left. Displays the remaining number of draw cards.
-   - Clicking draws the next card and places it onto the active waste pile.
-3. **Active Waste Pile (Discards):**
-   - Located at the bottom center. Shows the current card on top of the discard pile.
-4. **Streak Counter & Multiplier:**
-   - Cleared cards consecutive without drawing from the stock build combo streaks.
+#### A. Visual Cohort Funnels (Dual Donut Charts)
+- **Random Deals Funnel (Left):** Shows total conversion of random PRNG deals into Close Wins (🟢), Standard Wins (🔵), and Losses (🔴).
+- **Golden Seeds Funnel (Right):** Shows the conversion of curated winnable seeds, proving 100% completion without unwinnable card starvation.
 
----
+#### B. Multi-Persona Benchmark (Skill Expression)
 
-### 2.3 Interactive Modifiers (Bombs, Locks, Keys, Zap)
+![Multi-Persona](./docs/images/07_multi_persona_benchmark.png)
 
-- 💣 **Tick-Tock Bomb (`modifier: "bomb"`, $T=5$):**  
-  Displays an active turn countdown. Decrements each time you draw from the stock or clear a non-bomb card. Must be cleared before the timer reaches `0`, otherwise detonation triggers a level loss.
-- 🔒 **Lock Card (`modifier: "lock_1"`, `lock_2`):**  
-  Covered by a transparent padlock overlay. Cannot be tapped or collected until its matching Key card is cleared.
-- 🔑 **Key Card (`modifier: "key_1"`, `key_2`):**  
-  Clearing this card immediately dispels the matching lock overlay, unlocking the corresponding locked card on the board.
-- ⚡ **Zap Card (`modifier: "zap"`):**  
-  When collected, emits an electric shockwave that eliminates 2 additional blocking cards from the tableau.
+Measures win rates across 3 simulated player skill levels ($6 \times 600$ runs):
+- 🟢 **Pro / Expert ($\epsilon = 0\%$ error):** Optimal lookahead and modifier prioritization.
+- 🟡 **Medium ($\epsilon = 3\%$ error):** Average casual player.
+- 🔴 **Casual ($\epsilon = 15\%$ error):** Frequent sub-optimal moves and missed streaks.
+- **$\Delta PR$ (Skill Gap):** $PR_{\text{expert}} - PR_{\text{casual}}$. A healthy level shows $\Delta PR \ge 15\%$, confirming player choices drive outcomes.
 
 ---
 
-### 2.4 Golden Seeds vs. Random Deals
+### 1.4 Manual Simulation & Custom Deck Testing Drawer
 
-- **Random Deal (PRNG):** A standard randomized shuffle. With a tightly calibrated deck (13–16 cards), the natural win rate is ~3% due to high card starvation (survivorship bias).
-- **Golden Seed:** Background Web Workers test ~8,000 deals/second to find seeds where optimal card distribution guarantees a 100% winnable path finishing with $\le 2$ cards in the draw pile.
+Below the main card, click **`▼ Expand Manual Testing`** to open the interactive custom deck sandbox:
 
----
+![Manual Workbench](./docs/images/08_manual_simulation_workbench.png)
 
-## 3. Module 2: Difficulty Tuner & Monte Carlo Suite
-
-Click the **📊 Difficulty Tuner & Monte Carlo** tab in the top header to enter the calibration workbench:
-
-![Difficulty Tuner Full View](./docs/images/04_difficulty_tuner_full.png)
-
----
-
-### 3.1 Hero KPIs Ribbon
-
-![Hero KPIs Ribbon](./docs/images/05_hero_kpis_ribbon.png)
-
-The top ribbon gives an immediate 4-metric executive health check of the level:
-
-1. **🃏 Hand Size (Draw Pile):**  
-   The calibrated deck size determined by bisection search to meet the target $70\% \pm 2\%$ CWR.
-2. **🏆 Overall Pass Rate (Random vs. Golden):**  
-   Shows the baseline random PRNG pass rate (e.g. `2.6%`) side-by-side with the **🌟 Golden Seeds Pass Rate** (e.g. `100%`).
-3. **🎯 Close Win Rate (CWR):**  
-   The percentage of all winning games that finish with $\le 2$ cards left in the draw pile (Target: $70\% \pm 2\%$).
-4. **🔥 High-Excitement Cohort:**  
-   The number of players per 1,000 who experience high drama (Absolute Close Wins + Near Misses where $\le 2$ cards remain on board upon loss).
+1. **Adjust Hand Size:** Use the **`[ − ]`** and **`[ + ]`** stepper buttons or type a number directly into the deck input.
+2. **Click `▶ Run Simulation`:** Runs a full Monte Carlo evaluation on your custom hand size.
+3. **Compare Results:** The card displays complete 1:1 parity metrics (Hero KPIs, Donut charts, Personas, Flow breakdown) for your custom hand size.
+4. **Click `🎮 Apply & Play Custom Deck`:** Loads this custom deck size directly into the playable game canvas.
+5. **Click `💾 Export JSON`:** Saves the custom level JSON to your disk.
 
 ---
 
-### 3.2 Dual Donut Visual Funnels
+## 2. Module 1: Playable Prototype (Game Verification)
 
-![Dual Donut Visual Funnels](./docs/images/06_dual_donut_charts.png)
+To test the tactile game feel and verify card interactions manually, switch back to **🎮 Playable Prototype**:
 
-- **Left Chart (Random Deals Conversion):**  
-  Breaks down the entire cohort of random deals into:
-  - 🟢 **Close Wins ($\le 2$ cards left in draw pile)**
-  - 🔵 **Standard Wins ($>2$ cards left in draw pile)**
-  - 🔴 **Losses (Runs out of cards)**
-- **Right Chart (Golden Seeds Conversion):**  
-  Visualizes the curated golden seeds cohort, demonstrating 100% completion with a dominant close-win slice.
+![Playable Prototype](./docs/images/03_tripeaks_board_canvas.png)
+
+> **Gameplay Summary:** Tap face-up tableau cards with rank $\pm 1$ from the active waste card (with $K \leftrightarrow A$ wrap) to clear the board. Modifiers add tactical objectives: 💣 **Bombs** must be defused before their turn timer hits 0, 🔑 **Keys** unlock 🔒 **Locks**, and ⚡ **Zap cards** clear 2 extra blocking cards. Check **`☑️ Keep seed`** to replay the exact same deal, or toggle **`🌟 Golden Seed`** to test curated winnable close-win layouts.
 
 ---
 
-### 3.3 Multi-Persona Skill Expression Benchmark
+## 3. Production Calibration Summary ($N = 2{,}000$ runs)
 
-![Multi-Persona Benchmark](./docs/images/07_multi_persona_benchmark.png)
-
-Simulates 3 distinct player AI archetypes ($6 \times 600$ iterations) to measure how player skill affects pass rates:
-
-- 🟢 **Pro / Expert Persona ($\epsilon = 0\%$ error rate):** Plays greedy lookahead moves with optimal modifier prioritization.
-- 🟡 **Medium Persona ($\epsilon = 3\%$ error rate):** Represents an average casual player with occasional sub-optimal plays.
-- 🔴 **Casual Persona ($\epsilon = 15\%$ error rate):** Makes frequent sub-optimal moves and misses complex streak combinations.
-- **$\Delta PR$ Skill Expression:** The gap between Expert and Casual pass rate ($\Delta PR = PR_{\text{expert}} - PR_{\text{casual}}$). A healthy level yields $\Delta PR \ge 15\%$, proving the outcome depends on player choice rather than pure luck.
+| Level ID | Modifiers & Layout | Default Deck | Calibrated Deck (70% CWR) | Random Deal Win Rate | Golden Seed Win Rate |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **level_25** | Standard 3-Peak (21 cards) | 21 | **15 cards** (72.9% CWR) | 2.6% | **100%** |
+| **level_31** | ⚡ Zap + 🔒 2 Locks + 🔑 1 Key (26 cards) | 26 | **15 cards** (68.0% CWR) | 4.5% | **100%** |
+| **level_43** | Multi-Layer Pyramid (28 cards) | 28 | **16 cards** (70.5% CWR) | 3.1% | **100%** |
+| **level_54** | 💣 Bomb Countdown ($T{=}5$, 20 cards) | 20 | **13 cards** (71.1% CWR) | 3.3% | **100%** |
 
 ---
 
-### 3.4 Manual Simulation & Verification Workbench
-
-![Manual Simulation Workbench](./docs/images/08_manual_simulation_workbench.png)
-
-| Control | Action |
-| :--- | :--- |
-| **Deal / Seed Slider** | Scrub through seeds 1 to 150 to inspect individual layouts. |
-| **🎮 Play Deal** | Instantly switches to Module 1 and loads this exact seed and hand size into the interactive game canvas. |
-| **⚡ Run 1 Sim** | Executes a single step-by-step IS-MCTS simulation and prints the full move log in the terminal below. |
-| **🚀 Run 50 Sims** | Runs a batch of 50 Monte Carlo simulations on this specific seed to calculate its individual win rate and average remainder. |
-| **💾 Download JSON** | Exports the calibrated level file (with updated `cards_in_stack` and mined golden seeds) as standard JSON. |
-| **Live Decision Log** | Real-time terminal output displaying the bot's moves, combo streaks, bomb defusals, and final remainder count. |
-
----
-
-## 4. Custom Level Upload & JSON Export
-
-You can upload custom Softgames level JSON files at any time:
-
-1. Click **📂 Upload JSON** in either the game toolbar or the tuner header.
-2. Select one or multiple `.json` files.
-3. The application automatically validates the level schema, parses card coordinates and modifiers, calculates initial deck size, and caches the level in browser `localStorage`.
-4. Switch to the new level via the dropdown to play or run auto-calibration.
-5. Click **💾 Download JSON** to save the balanced level file back to your disk.
+## 4. Engineering Deliverables & Technical Specs
+- 📄 **1-Page Candidate Brief (Zero-Slop v2):** [`CANDIDATE_BRIEF_V2.md`](./CANDIDATE_BRIEF_V2.md)
+- 📊 **Balancing & Mathematical Analysis Report:** [`CANDIDATE_REPORT.md`](./CANDIDATE_REPORT.md)
+- ⏱️ **Interactive Development Timeline & Transcripts:** [thegod322.github.io/guapiko-timeline-viewer](https://thegod322.github.io/guapiko-timeline-viewer/)
