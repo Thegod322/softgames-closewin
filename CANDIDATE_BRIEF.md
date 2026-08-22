@@ -10,7 +10,7 @@
 
 ## 1. Executive Summary & The Balancing Finding
 
-I built a data-driven Tripeaks Solitaire prototype and Monte Carlo difficulty tuner in **4 hours 09 minutes of active AI development time** across 8 sessions (78 hours total calendar span).
+I built a data-driven Tripeaks Solitaire prototype and Monte Carlo difficulty tuner in **12 hours 20 minutes of combined active co-work** (4h 09m net AI execution + 8h 11m operator prompt engineering, specs & testing) across 8 sessions over a 78-hour calendar span.
 
 Automated bisection search tuned deck sizes down to 13–16 cards to meet the brief's target: a 70% Close Win Rate (CWR), defined as winning with fewer than 3 cards left in the draw pile.
 
@@ -42,15 +42,17 @@ Development followed an iterative 3-step milestone loop across 8 sessions:
 
 Tracked from exact session timestamps via [`scripts/timeline_analyzer.py`](file:///c:/Misc/GuapikoProjects/Vaults/GuapikoClaw/GuapikoClaw/scripts/timeline_analyzer.py):
 
-- **Calendar Span:** 78 hours (Aug 18, 22:10 — Aug 22, 04:42)
-- **Net Active AI Time:** **4 hours 09 minutes** (80 turns in 8 sessions)
-- **Playtesting, Sleep & Analysis Gaps:** 74 hours 27 minutes
+- **Calendar Span:** 78 hours 32 min (Aug 18, 22:10 — Aug 22, 04:42)
+- **Combined Active Co-Work:** **12 hours 20 minutes** (15.7% total density)
+  - **Net Active AI Execution:** **4 hours 09 minutes** (80 turns in 8 sessions)
+  - **Operator Prompting & Analysis (<1h):** **8 hours 11 minutes** (prompt engineering, specs & in-browser testing)
+- **Offline Breaks & Sleep (≥1h):** **66 hours 16 minutes** (8 sleep & offline intervals)
 
-### Where the Time Went
+### Where Active Time Went (12h 20m Co-Work)
 
-- **Prompting & Specifications (18% / ~45 min):** Writing technical specs, defining card graph geometry, task decomposition.
-- **AI Code Generation (34% / ~1h 24m):** State machine, PixiJS vector renderer, Web Worker simulation loops, UI components.
-- **Manual Playtesting & Game Balancing (48% / ~2h 00m):** Verifying draw feel, diagnosing survivorship bias in seed generation, tuning IS-MCTS bot weights, testing mobile layout.
+- **AI Code Generation & Sim Threads (34% / ~4h 09m):** Headless FSM, PixiJS vector renderer, Web Worker Monte Carlo loops, single-page UI.
+- **Operator Prompting & Tech Specs (33% / ~4h 05m):** Domain research, invariant modeling, task decomposition, and prompt drafting.
+- **Manual Playtesting & Game Balancing (33% / ~4h 06m):** In-browser feel verification, diagnosing survivorship bias, tuning bot heuristics, testing custom JSON uploads.
 
 ---
 
