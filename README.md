@@ -6,19 +6,13 @@
 
 ---
 
-## ⚡ Quick Start: How to Open the Tuner
+## ⚡ Quick Start: Switching to the Difficulty Tuner
 
-When you open the web application, it starts in the **🎮 Playable Prototype** view. 
+The web application opens by default in the **🎮 Playable Prototype** view.
 
-To access the balancing suite, click the **📊 Difficulty Tuner & Monte Carlo** tab in the top navigation bar:
+To switch to the balancing and simulation workbench, click the **📊 Difficulty Tuner & Monte Carlo** tab in the top navigation bar:
 
-```
-+-------------------------------------------------------------------------------------------------------+
-| SOFTGAMES  Operation Close Win   [ 🎮 Playable Prototype ] [ 📊 Difficulty Tuner & Monte Carlo ] <-- CLICK HERE
-+-------------------------------------------------------------------------------------------------------+
-```
-
-![Top Navigation & Prototype Overview](./docs/images/01_game_prototype_overview.png)
+![Top Navigation Tab Switcher](./docs/images/01_top_nav_switcher.png)
 
 ---
 
@@ -26,13 +20,12 @@ To access the balancing suite, click the **📊 Difficulty Tuner & Monte Carlo**
 
 The Difficulty Tuner runs large-scale Monte Carlo simulations ($N=2,000$ runs per level in background Web Workers) to auto-calibrate deck sizes for a **70% Close Win Rate (CWR)**, benchmark player personas, and isolate winnable **Golden Seeds**.
 
-![Difficulty Tuner Overview](./docs/images/04_difficulty_tuner_full.png)
+![Difficulty Tuner Overview](./docs/images/03_difficulty_tuner_overview.png)
 
 ### 1.1 Top Controls Bar
 
-At the top of the Tuner card:
 - **Level Select Dropdown:** Switch between presets (`level_25`, `level_31`, `level_43`, `level_54`) or uploaded custom levels.
-- **📂 Upload JSON:** Load custom level JSON files. They are automatically parsed and saved to browser `localStorage`.
+- **📂 Upload JSON:** Load custom level JSON files directly from your disk (saved to browser `localStorage`).
 - **🚀 Run Analysis:** Runs the full $N=2,000$ simulation batch to recalculate all stats.
 - **🎮 Apply & Play:** Applies the calibrated deck size and switches directly to the playable game.
 - **💾 Download JSON:** Exports the calibrated level file with the new deck size and mined golden seeds.
@@ -41,7 +34,7 @@ At the top of the Tuner card:
 
 ### 1.2 Hero KPI Ribbon (Executive Metrics)
 
-![Hero KPIs](./docs/images/05_hero_kpis_ribbon.png)
+![Hero KPIs](./docs/images/04_hero_kpis_ribbon.png)
 
 | Metric | Meaning & Target |
 | :--- | :--- |
@@ -54,15 +47,33 @@ At the top of the Tuner card:
 
 ### 1.3 Deep Dive Panels
 
-![Panels](./docs/images/06_dual_donut_charts.png)
-
 #### A. Visual Cohort Funnels (Dual Donut Charts)
+
+![Dual Donut Funnels](./docs/images/05_dual_donut_funnels.png)
+
 - **Random Deals Funnel (Left):** Shows total conversion of random PRNG deals into Close Wins (🟢), Standard Wins (🔵), and Losses (🔴).
 - **Golden Seeds Funnel (Right):** Shows the conversion of curated winnable seeds, proving 100% completion without unwinnable card starvation.
 
-#### B. Multi-Persona Benchmark (Skill Expression)
+---
 
-![Multi-Persona](./docs/images/07_multi_persona_benchmark.png)
+#### B. Detailed Flow & Loss Causes
+
+![Detailed Flow & Loss Causes](./docs/images/06_detailed_flow_and_losses.png)
+
+| Metric | Meaning |
+| :--- | :--- |
+| **Near Misses ($\le 2$ on board)** | Percentage of losses where only 1–2 cards remained on the board. This is the prime driver for high-intent retries and extra card purchases. |
+| **Abs Close Wins (All Players)** | Absolute close win percentage across the entire player population. |
+| **Loss Causes Breakdown** | Shows whether losses occurred due to running out of draw cards (`Deck %`) or failing a hazard (`Bomb %`). |
+| **Median Draw Remainder** | Median number of unused cards in the draw pile upon winning (Target: $\le 2$ cards). |
+| **Average Win Streak** | Average number of consecutive tableau cards cleared without drawing from the stock. |
+| **Avg Moves to Solve** | Average number of card operations required to complete the board. |
+
+---
+
+#### C. Multi-Persona Skill Benchmark (Skill Expression)
+
+![Multi-Persona Benchmark](./docs/images/07_multi_persona_benchmark.png)
 
 Measures win rates across 3 simulated player skill levels ($6 \times 600$ runs):
 - 🟢 **Pro / Expert ($\epsilon = 0\%$ error):** Optimal lookahead and modifier prioritization.
@@ -74,13 +85,13 @@ Measures win rates across 3 simulated player skill levels ($6 \times 600$ runs):
 
 ### 1.4 Manual Simulation & Custom Deck Testing Drawer
 
-Below the main card, click **`▼ Expand Manual Testing`** to open the interactive custom deck sandbox:
+Click **`▼ Expand Manual Testing`** below the main card to open the custom deck sandbox:
 
-![Manual Workbench](./docs/images/08_manual_simulation_workbench.png)
+![Manual Simulation Drawer](./docs/images/08_manual_simulation_drawer.png)
 
 1. **Adjust Hand Size:** Use the **`[ − ]`** and **`[ + ]`** stepper buttons or type a number directly into the deck input.
 2. **Click `▶ Run Simulation`:** Runs a full Monte Carlo evaluation on your custom hand size.
-3. **Compare Results:** The card displays complete 1:1 parity metrics (Hero KPIs, Donut charts, Personas, Flow breakdown) for your custom hand size.
+3. **Compare Results:** Displays full 1:1 parity metrics (Hero KPIs, Donut charts, Personas, Flow breakdown) for your custom hand size.
 4. **Click `🎮 Apply & Play Custom Deck`:** Loads this custom deck size directly into the playable game canvas.
 5. **Click `💾 Export JSON`:** Saves the custom level JSON to your disk.
 
@@ -88,9 +99,9 @@ Below the main card, click **`▼ Expand Manual Testing`** to open the interacti
 
 ## 2. Module 1: Playable Prototype (Game Verification)
 
-To test the tactile game feel and verify card interactions manually, switch back to **🎮 Playable Prototype**:
+To test the tactile game feel and verify card interactions manually, switch to **🎮 Playable Prototype**:
 
-![Playable Prototype](./docs/images/03_tripeaks_board_canvas.png)
+![Playable Prototype](./docs/images/02_gameplay_canvas.png)
 
 > **Gameplay Summary:** Tap face-up tableau cards with rank $\pm 1$ from the active waste card (with $K \leftrightarrow A$ wrap) to clear the board. Modifiers add tactical objectives: 💣 **Bombs** must be defused before their turn timer hits 0, 🔑 **Keys** unlock 🔒 **Locks**, and ⚡ **Zap cards** clear 2 extra blocking cards. Check **`☑️ Keep seed`** to replay the exact same deal, or toggle **`🌟 Golden Seed`** to test curated winnable close-win layouts.
 
