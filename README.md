@@ -20,6 +20,11 @@ To switch to the balancing and simulation workbench, click the **📊 Difficulty
 
 The Difficulty Tuner runs large-scale Monte Carlo simulations ($N=2,000$ runs per level in background Web Workers) to auto-calibrate deck sizes for a **70% Close Win Rate (CWR)**, benchmark player personas, and isolate winnable **Golden Seeds**.
 
+> **How to test and calibrate a level:**  
+> 1. Select a level from the dropdown list or click **📂 Upload JSON** to load a custom level from your disk.  
+> 2. Click **🚀 Run Analysis** to run the $N = 2,000$ simulation batch and observe the resulting metrics, funnels, and persona benchmarks.  
+> 3. If you want to tweak or test custom deck sizes manually, open the **`▼ Expand Manual Testing`** drawer below.
+
 ![Difficulty Tuner Overview](./docs/images/03_difficulty_tuner_overview.png)
 
 ### 1.1 Top Controls Bar
