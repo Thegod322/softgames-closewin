@@ -1,4 +1,4 @@
-# Softgames — Operation Close Win: Engineering Brief (v2)
+# Softgames — Operation Close Win: Candidate Brief & Engineering Summary
 
 - **Candidate:** Arkady Krutius
 - **Live Prototype & Tuner:** [thegod322.github.io/softgames-closewin](https://thegod322.github.io/softgames-closewin/)

@@ -135,6 +135,6 @@ To test the tactile game feel and verify card interactions manually, switch to *
 ---
 
 ## 4. Engineering Deliverables & Links
-- 📄 **1-Page Candidate Brief (Zero-Slop v2):** [`CANDIDATE_BRIEF_V2.md`](./CANDIDATE_BRIEF_V2.md)
+- 📄 **1-Page Candidate Brief & Executive Summary:** [`CANDIDATE_BRIEF.md`](./CANDIDATE_BRIEF.md)
 - ⏱️ **Interactive Development Timeline & Transcripts:** [https://thegod322.github.io/guapiko-timeline-viewer/](https://thegod322.github.io/guapiko-timeline-viewer/)
 - 🎮 **Live Web Application (Game Prototype & Tuner):** [https://thegod322.github.io/softgames-closewin/](https://thegod322.github.io/softgames-closewin/)
