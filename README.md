@@ -47,12 +47,23 @@ The Difficulty Tuner runs large-scale Monte Carlo simulations ($N=2,000$ runs pe
 
 ### 1.3 Deep Dive Panels
 
-#### A. Visual Cohort Funnels (Dual Donut Charts)
+#### A. Visual Cohort & Quality Funnel (Dual Donut Charts)
 
-![Dual Donut Funnels](./docs/images/05_dual_donut_funnels.png)
+![Visual Cohort & Quality Funnel](./docs/images/05_dual_donut_funnels.png)
 
-- **Random Deals Funnel (Left):** Shows total conversion of random PRNG deals into Close Wins (🟢), Standard Wins (🔵), and Losses (🔴).
-- **Golden Seeds Funnel (Right):** Shows the conversion of curated winnable seeds, proving 100% completion without unwinnable card starvation.
+- **🌍 All Games Funnel (Left Donut — 100% of All Attempts):**  
+  Analyzes the entire cohort of $N = 2,000$ simulation runs across 4 distinct player outcomes:
+  - 🟡 **Close Wins (e.g. 2.0%):** Player cleared the board with $\le 2$ cards left in the draw pile.
+  - 🔵 **Standard Wins (e.g. 0.9%):** Player cleared the board with $\ge 3$ cards left in the draw pile.
+  - 🟣 **Near Misses (e.g. 9.7%):** Failed, but left only $\le 2$ cards on the board (commercial high-intent retry trigger).
+  - ⚫ **Losses (e.g. 87.5%):** Ran out of draw cards with $\ge 3$ cards remaining on the board.
+- **🏆 Win Quality (Right Donut — Analysis of Wins Only):**  
+  Isolates **strictly victorious games** (e.g. 57 wins out of 2,000) to evaluate the **Close Win Rate (CWR)**:
+  - 🟡 **Close ($\le 2$ cards remaining in stock, e.g. 70.2%):** Meets the brief's target.
+  - 🔵 **Std ($3+$ cards remaining in stock, e.g. 29.8%):** Comfortable wins.
+
+> 💡 **The Golden Seeds Link:**  
+> Even when a level's overall pass rate on raw PRNG deals is low (2–4%), any pass rate above 1% proves that winnable shuffles naturally exist even with a tightly tuned deck. Out of a 20,000-deal pool, this provides **~500+ curated Golden Seeds** with an empirical ~100% pass rate, ensuring players always get exciting close wins without suffering from unwinnable card starvation.
 
 ---
 
