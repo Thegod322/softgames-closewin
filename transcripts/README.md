@@ -18,6 +18,9 @@ Instead of reading raw JSONL files, you can explore the entire project timeline 
 | [`session_04_ec4b518d.jsonl`](./session_04_ec4b518d.jsonl) | **Chat 4: Balance & Seed Mining** | `ec4b518d-47af...` | 12 | 25m 12s | Monte Carlo bisection search, Dual-mode auto-calibrator |
 | [`session_05_34b6f13f.jsonl`](./session_05_34b6f13f.jsonl) | **Chat 5: Task 08 Specification** | `34b6f13f-b704...` | 2 | 4m 13s | Architectural spec for Multi-Persona testing & dynamic mining |
 | [`session_06_3116d3cf.jsonl`](./session_06_3116d3cf.jsonl) | **Chat 6: Multi-Persona & Polish** | `3116d3cf-ff14...` | 11 | 1h 03m | Casual/Medium/Pro bots, dynamic Golden Seed miner, SVG donuts |
+| [`session_07_88d03db3.jsonl`](./session_07_88d03db3.jsonl) | **Chat 7: Deployment & Delivery Docs** | `88d03db3-80b6...` | 15 | 31m 13s | GitHub Pages deployment, timeline viewer, zero-slop brief |
+| [`session_08_a7b63577.jsonl`](./session_08_a7b63577.jsonl) | **Chat 8: UI Consolidation & Parity** | `a7b63577-876e...` | 18 | 54m 01s | Single Target UI consolidation, 1:1 statistical parity, batch upload |
+| **Total** | **8 Full Sessions** | — | **80** | **4h 09m** | **Complete Full-Cycle Development Log** |
 
 ---
 
