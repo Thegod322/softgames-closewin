@@ -22,11 +22,19 @@ To solve this, I built a background **Golden Seed Miner** (~8,000 seeds/s via We
 
 ## 2. Development Workflow
 
-The project ran on three practical stages:
+Development followed an iterative 3-step milestone loop across 8 sessions:
 
-1. **Context & Invariants First:** Before generating code, I codified the mathematical rules into a persistent repository skill (`softgames-closewin.md`). This included card overlap geometry ($|\Delta x| < 0.98 \cdot W$, $|\Delta y| < 0.98 \cdot H$), modifier states (bombs, locks, keys, zap cards), and persona heuristics. I then broke the build into 8 discrete task files (`task_01` to `task_08`).
-2. **Implementation & In-Browser Checks:** Subagents wrote the headless state machine, vector card renderer, and parallel simulation workers. After each build, I playtested directly in the browser to fix spatial edge cases—like correcting card occlusion when bounding box deltas mismatched row offsets—and tune game feel (draw speed, bomb timers, layout scaling).
-3. **Benchmarking & UI Hardening:** I added multi-persona testing (Casual, Medium, Pro), unified the tuner into a single-page view with 1:1 statistical parity between batch runs and golden seed verification, and added custom JSON level uploads with `localStorage` caching.
+1. **Context & Task Decomposition**
+   - **Step:** Gather domain context, write the technical specification (Tech Spec), and decompose the milestone into atomic tasks.
+   - **Result:** Codified game rules into a persistent repository skill (`softgames-closewin.md`) and broke the architecture into 8 task files (`task_01` to `task_08`).
+
+2. **Autonomous Execution & In-Browser Iteration**
+   - **Step:** AI subagents implement tasks in sequence and iterate with in-browser playtesting until all milestone tasks are resolved.
+   - **Result:** Built the headless state machine, procedural vector card renderer, and parallel simulation workers while tuning game feel directly in the browser.
+
+3. **Milestone Audit & Quality Gate**
+   - **Step:** Empirically evaluate the milestone. If all criteria are satisfied $\rightarrow$ **Done / Ship**. If improvements or edge cases emerge $\rightarrow$ **Return to Step 1 for the next cycle**.
+   - **Result:** Benchmark simulations exposed survivorship bias and UX bottlenecks, driving subsequent loop iterations for dynamic golden seed mining, multi-persona testing, and UI hardening.
 
 ---
 
