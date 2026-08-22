@@ -10,13 +10,13 @@
 
 ## 1. Executive Summary & The Balancing Finding
 
-We built a data-driven Tripeaks Solitaire prototype and Monte Carlo difficulty tuner in **4 hours 09 minutes of active AI development time** across 8 sessions (78 hours total calendar span).
+I built a data-driven Tripeaks Solitaire prototype and Monte Carlo difficulty tuner in **4 hours 09 minutes of active AI development time** across 8 sessions (78 hours total calendar span).
 
 Automated bisection search tuned deck sizes down to 13–16 cards to meet the brief's target: a 70% Close Win Rate (CWR), defined as winning with fewer than 3 cards left in the draw pile.
 
 Simulating 2,000 runs per level exposed a core game design problem: **survivorship bias**. When you shrink the deck to force close finishes on random deals, total win rate drops to 2.6%–4.5%. Most deals simply become unwinnable because the player runs out of cards before clearing the board.
 
-To solve this, we built a background **Golden Seed Miner** (~8,000 seeds/s via Web Workers). It isolates seeds guaranteed to be winnable and balance them to finish with 0–2 cards remaining. This gives players dramatic close wins without ruining progression or win rates.
+To solve this, I built a background **Golden Seed Miner** (~8,000 seeds/s via Web Workers). It isolates seeds guaranteed to be winnable and balances them to finish with 0–2 cards remaining. This gives players dramatic close wins without ruining progression or win rates.
 
 ---
 
@@ -24,9 +24,9 @@ To solve this, we built a background **Golden Seed Miner** (~8,000 seeds/s via W
 
 The project ran on three practical stages:
 
-1. **Context & Invariants First:** Before generating code, we codified the mathematical rules into a persistent repository skill (`softgames-closewin.md`). This included card overlap geometry ($|\Delta x| < 0.98 \cdot W$, $|\Delta y| < 0.98 \cdot H$), modifier states (bombs, locks, keys, zap cards), and persona heuristics. We then broke the build into 8 discrete task files (`task_01` to `task_08`).
-2. **Implementation & In-Browser Checks:** Subagents wrote the headless state machine, vector card renderer, and parallel simulation workers. After each build, we playtested directly in the browser to fix spatial edge cases—like correcting card occlusion when bounding box deltas mismatched row offsets—and tune game feel (draw speed, bomb timers, layout scaling).
-3. **Benchmarking & UI Hardening:** We added multi-persona testing (Casual, Medium, Pro), unified the tuner into a single-page view with 1:1 statistical parity between batch runs and golden seed verification, and added custom JSON level uploads with `localStorage` caching.
+1. **Context & Invariants First:** Before generating code, I codified the mathematical rules into a persistent repository skill (`softgames-closewin.md`). This included card overlap geometry ($|\Delta x| < 0.98 \cdot W$, $|\Delta y| < 0.98 \cdot H$), modifier states (bombs, locks, keys, zap cards), and persona heuristics. I then broke the build into 8 discrete task files (`task_01` to `task_08`).
+2. **Implementation & In-Browser Checks:** Subagents wrote the headless state machine, vector card renderer, and parallel simulation workers. After each build, I playtested directly in the browser to fix spatial edge cases—like correcting card occlusion when bounding box deltas mismatched row offsets—and tune game feel (draw speed, bomb timers, layout scaling).
+3. **Benchmarking & UI Hardening:** I added multi-persona testing (Casual, Medium, Pro), unified the tuner into a single-page view with 1:1 statistical parity between batch runs and golden seed verification, and added custom JSON level uploads with `localStorage` caching.
 
 ---
 
@@ -46,20 +46,7 @@ Tracked from exact session timestamps via [`scripts/timeline_analyzer.py`](file:
 
 ---
 
-## 4. Level Calibration Results ($N = 2{,}000$ per Level)
-
-| Level ID | Modifiers & Layout | Initial Deck | Calibrated Deck (70% CWR) | Random Deal Win Rate | Golden Seed Win Rate |
-| :--- | :--- | :---: | :---: | :---: | :---: |
-| **level_25** | Standard 3-Peak (21 cards) | 21 | **15 cards** (72.9% CWR) | 2.6% | **100%** |
-| **level_31** | ⚡ Zap + 🔒 2 Locks + 🔑 1 Key (26 cards) | 26 | **15 cards** (68.0% CWR) | 4.5% | **100%** |
-| **level_43** | Multi-Layer Pyramid (28 cards) | 28 | **16 cards** (70.5% CWR) | 3.1% | **100%** |
-| **level_54** | 💣 Bomb Countdown ($T{=}5$, 20 cards) | 20 | **13 cards** (71.1% CWR) | 3.3% | **100%** |
-
-*All calibrated level files are saved in [`data/levels/`](./data/levels/).*
-
----
-
-## 5. Session Chrono-Log
+## 4. Session Chrono-Log
 
 | Chat | Milestone | Key Deliverables | Active AI Time | Turns |
 | :---: | :--- | :--- | :---: | :---: |
